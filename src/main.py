@@ -61,6 +61,15 @@ def all_recipes():
         print(new_list)
     return jsonify(new_list),200
 
+#Eliminar Receta
+@app.route('/recipe/<int:id>',methods=['DELETE'])
+def delete_recipe(id):
+    recipe= Recipe.query.filter_by(id=id)
+    recipe.delete()
+    db.session.commit()
+    return jsonify('receta eliminada'),200
+
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
