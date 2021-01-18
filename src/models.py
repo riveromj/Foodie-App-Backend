@@ -2,18 +2,22 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    text  = db.Column(db.String(250),nullable=False)
+    date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    user_id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, primary_key=True)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+    #def __repr__(self):
+        #return '<User %r>' % self.username
 
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
-            # do not serialize the password, its a security breach
+            "text": self.text,
+            "date_comment": self.date,
+            "user_id": self.user_id,
+            "recipe_id": self.recipe_id
+
         }
