@@ -7,7 +7,7 @@ class User(db.Model):
     user_name = db.Column(db.string(80), unique=True, nullable= False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    image = db.Column(db.String(500)), nullable = True)
+    image = db.Column(db.Text), nullable = True)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __init__(self, email, password, image):
