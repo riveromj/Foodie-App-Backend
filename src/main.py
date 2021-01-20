@@ -39,6 +39,35 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+        #COMMENTS
+
+@app.route('/comments', method=['GET'])
+def get_all_comments():
+    all_comments=db.session.query(Comments).all()
+    print(all_comments)
+    comment_list=[]
+    for comment in all_comments:
+        comment_list.append(comment.serialize())
+        print(comment_list)
+    return jsonify(comment_list), 200
+
+@app.route('/comments', method=['POST'])
+def create_comment():
+    body=request.get_json()
+    new_comment=Comments(body['text'], body['date_comment'], body['user_id'], body['recipe_id'])
+    db.session.add(new_comment)
+    db.session.commit()
+    print(new_comment.serialize())
+    return jsonify('comentario creado'),200
+
+@app.route('/comments/<int:id>', method=['DELETE'])
+def delete_comment(id):
+    body=request.get_json()
+    comment=Comments.query.filter_by(id=id)
+    comment.delete()
+    db.session.commit()
+    return jsonify('comentario borrado'),200
+    
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
