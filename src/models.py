@@ -21,10 +21,7 @@ class Recipe(db.Model):
         self.ingredients = ingredients
         self.elaboration = elaboration
         self.num_comment = num_comment
-<<<<<<< HEAD
         self.is_active = True
-=======
->>>>>>> 78745e4f41d22a41ef7c1e162c6ead5cdaa453b8
     
 
     def __repr__(self):
@@ -38,11 +35,5 @@ class Recipe(db.Model):
             "ingredients":self.ingredients,
             "elaboration":self.elaboration,
             "num_comment":self.num_comment,
-<<<<<<< HEAD
             "date_recipe":self.recipe,
         }
-=======
-           # "date_recipe":self.recipe,
-            # do not serialize the password, its a security breach
-        }
->>>>>>> 78745e4f41d22a41ef7c1e162c6ead5cdaa453b8
