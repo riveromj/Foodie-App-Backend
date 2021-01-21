@@ -9,11 +9,11 @@ class Recipe(db.Model):
     image = db.Column(db.String(250),nullable=False)
     ingredients = db.Column(db.String(250),nullable=False)
     elaboration = db.Column(db.String(250),nullable=False)
-    num_comment = db.Column(db.Integer,nullable=False)
+    num_comment = db.Column(db.Integer)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     #user_id = db.Column(db.Integer,ForeignKey('User.id'))
     #User = relationship("User")
-    is_active = db.Column(db.Boolean(), unique = False, nullable = False)
+   # is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
     def __init__(self, title, image, ingredients, elaboration,num_comment):
         self.title = title
@@ -21,7 +21,7 @@ class Recipe(db.Model):
         self.ingredients = ingredients
         self.elaboration = elaboration
         self.num_comment = num_comment
-        self.is_active = True
+       # self.is_active = True
     
 
     def __repr__(self):
@@ -35,5 +35,5 @@ class Recipe(db.Model):
             "ingredients":self.ingredients,
             "elaboration":self.elaboration,
             "num_comment":self.num_comment,
-            "date_recipe":self.recipe,
+            "date_recipe":self.date_recipe,
         }

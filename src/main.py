@@ -44,7 +44,7 @@ def handle_hello():
 def create_recipe():
     body=request.get_json()
    # print(body)
-    new_recipe=Recipe(body['title'],body['image'],body['ingredients'],body['elaboration'],body['num_comment'])
+    new_recipe=Recipe(body['title'],body['image'],body['ingredients'],body['elaboration'])
     db.session.add(new_recipe)
     db.session.commit()
     print(new_recipe.serialize())
