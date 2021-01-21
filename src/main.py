@@ -44,11 +44,9 @@ def handle_hello():
 @app.route('/comments', method=['GET'])
 def get_all_comments():
     all_comments=db.session.query(Comments).all()
-    print(all_comments)
     comment_list=[]
     for comment in all_comments:
         comment_list.append(comment.serialize())
-        print(comment_list)
     return jsonify(comment_list), 200
 
 @app.route('/comments', method=['POST'])
@@ -57,7 +55,6 @@ def create_comment():
     new_comment=Comments(body['text'], body['date_comment'], body['user_id'], body['recipe_id'])
     db.session.add(new_comment)
     db.session.commit()
-    print(new_comment.serialize())
     return jsonify('comentario creado'),200
 
 @app.route('/comments/<int:id>', method=['DELETE'])
