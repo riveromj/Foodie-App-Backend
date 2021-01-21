@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+from random import randrange
 from os.path import join, dirname, realpath
 from flask import Flask, request, jsonify, url_for,send_file
 from flask_migrate import Migrate
@@ -40,31 +41,22 @@ def send_image(filename):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
-    print(Recipe)
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
-
 #Crear nueva receta
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
-   # body=request.get_json() insetar receta sin imagen
     body = dict(request.form)
     newFile = request.files['image'] 
-    print(newFile)
-    print(body)
-    filename = secure_filename(newFile.filename) #hasta aqui funciona el codigo
+    filename = secure_filename(newFile.filename)
+    #validacion si el nombre de la imagen ya existe en db
+    if os.path.exists('./src/img/' + filename):
+        num = str(randrange(100))+'.'
+        filename = filename.replace('.', num)
+        print(filename, num)
     newFile.save(os.path.join('./src/img', filename))
     url = HOST + filename
-    print (url)
     new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
     db.session.add(new_recipe)
     db.session.commit()
-    #print(new_recipe.serialize())
     return jsonify(new_recipe.serialize()),201
 
 #Consulta de todas las recetas
