@@ -45,19 +45,23 @@ def sitemap():
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
     body = dict(request.form)
-    newFile = request.files['image'] 
+    newFile = request.files['image']
     filename = secure_filename(newFile.filename)
+    #validar la extension de la foto .jpg o .png
+    exten = filename.rsplit('.')
+    if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
     #validacion si el nombre de la imagen ya existe en db
-    if os.path.exists('./src/img/' + filename):
-        num = str(randrange(100))+'.'
-        filename = filename.replace('.', num)
-        print(filename, num)
-    newFile.save(os.path.join('./src/img', filename))
-    url = HOST + filename
-    new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
-    db.session.add(new_recipe)
-    db.session.commit()
-    return jsonify(new_recipe.serialize()),201
+        if os.path.exists('./src/img/' + filename):
+            num = str(randrange(100))+'.'
+            filename = filename.replace('.', num)
+        newFile.save(os.path.join('./src/img', filename))
+        url = HOST + filename
+        new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
+        db.session.add(new_recipe)
+        db.session.commit()
+        return jsonify(new_recipe.serialize()),201
+    else:
+        return jsonify('extencion de archivo no permitido'),200
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
