@@ -22,10 +22,6 @@ class Recipe(db.Model):
         self.elaboration = elaboration
         self.num_comment = num_comment
        # self.is_active = True
-    
-
-    def __repr__(self):
-        return '<Recipe %r>' % self.title
 
     def serialize(self):
         return {

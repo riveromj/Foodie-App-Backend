@@ -2,13 +2,17 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from os.path import join, dirname, realpath
+from flask import Flask, request, jsonify, url_for,send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, Recipe
+
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -25,6 +29,12 @@ HOST = "https://3000-ed542743-ef07-4d5c-a241-d1227819290b.ws-eu03.gitpod.io/"
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
+#para mostrar la imagen de la receta
+@app.route('/<filename>', methods=['GET'])
+def send_image(filename):
+    return send_file('./img/'+filename)
+
+
 # generate sitemap with all your endpoints
 @app.route('/')
 def sitemap():
@@ -32,7 +42,7 @@ def sitemap():
 
 @app.route('/user', methods=['GET'])
 def handle_hello():
-
+    print(Recipe)
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
@@ -42,13 +52,20 @@ def handle_hello():
 #Crear nueva receta
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
-    body=request.get_json()
-   # print(body)
-    new_recipe=Recipe(body['title'],body['image'],body['ingredients'],body['elaboration'],body['num_comment'])
+   # body=request.get_json() insetar receta sin imagen
+    body = dict(request.form)
+    newFile = request.files['image'] 
+    print(newFile)
+    print(body)
+    filename = secure_filename(newFile.filename) #hasta aqui funciona el codigo
+    newFile.save(os.path.join('./src/img', filename))
+    url = HOST + filename
+    print (url)
+    new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
     db.session.add(new_recipe)
     db.session.commit()
-    print(new_recipe.serialize())
-    return jsonify('recipe successfully created'),201
+    #print(new_recipe.serialize())
+    return jsonify(new_recipe.serialize()),201
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
