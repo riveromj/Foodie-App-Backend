@@ -2,16 +2,15 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from random import randrange
-from os.path import join, dirname, realpath
+from admin import setup_admin
 from flask import Flask, request, jsonify, url_for,send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from utils import APIException, generate_sitemap
-from admin import setup_admin
 from models import db, Recipe
-
+from os.path import join, dirname, realpath
+from random import randrange
+from utils import APIException, generate_sitemap
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 
@@ -45,17 +44,17 @@ def sitemap():
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
     body = dict(request.form)
-    newFile = request.files['image']
-    filename = secure_filename(newFile.filename)
+    new_file = request.files['image']
+    file_name = secure_filename(new_file.filename)
     #validar la extension de la foto .jpg o .png
-    exten = filename.rsplit('.')
+    exten = file_name.rsplit('.')
     if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
     #validacion si el nombre de la imagen ya existe en db
-        if os.path.exists('./src/img/' + filename):
+        if os.path.exists('./src/img/' + file_name):
             num = str(randrange(100))+'.'
-            filename = filename.replace('.', num)
-        newFile.save(os.path.join('./src/img', filename))
-        url = HOST + filename
+            file_name = file_name.replace('.', num)
+        new_file.save(os.path.join('./src/img', file_name))
+        url = HOST + file_name
         new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
         db.session.add(new_recipe)
         db.session.commit()
