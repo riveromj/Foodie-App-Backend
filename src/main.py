@@ -33,9 +33,9 @@ def sitemap():
 @app.route('/user/register', methods=['POST'])
 def register_user():
     body = request.get_json()
-    print(body)
+    print("estoy en body", body)
     new_user = User(body['email'], body['password'])
-    print(new_user)
+    print("estoy en new_user", new_user)
     return jsonify(response_body), 201
 
 # this only runs if `$ python src/main.py` is executed
