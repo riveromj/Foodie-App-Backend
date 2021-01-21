@@ -9,6 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
+from encrypted import encrypted_pass
 #from models import Person
 
 app = Flask(__name__)
@@ -32,14 +33,30 @@ def sitemap():
 
 @app.route('/user/register', methods=['POST'])
 def register_user():
-    body = request.get_json()
-    print("estoy en body", body)
-    new_user = User(body['email'], body['password'], body['image'])
-    print("estoy en new_user", new_user)
-    response_body ={
-        "msg": "User register"
-    }
-    return jsonify(response_body), 201
+    try:
+        body = request.get_json()
+        if(
+            body['email'] == '' or body['email'] == None):
+            return jsonify({"msg":"Email is not send"}), 400
+        if(
+            body['password'] == "" or body['password'] == None):
+            return jsonify({"msg":"Password id not send"}), 400
+        
+        new_pass = encrypted_pass(body['password'])
+        new_user = User(body['email'], new_pass, body['image'])
+        db.session.add(new_user)
+        db.session.commit()
+        print("estoy en new_user", new_user)
+        response_body ={
+            "msg": new_user.serialize()
+        }
+        return jsonify(response_body), 201
+
+    except:
+        response_body = {
+            "msg":"User exist"
+        }
+        return jsonify(response_body),400
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
