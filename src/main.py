@@ -34,8 +34,11 @@ def sitemap():
 def register_user():
     body = request.get_json()
     print("estoy en body", body)
-    new_user = User(body['email'], body['password'])
+    new_user = User(body['email'], body['password'], body['image'])
     print("estoy en new_user", new_user)
+    response_body ={
+        "msg": "User register"
+    }
     return jsonify(response_body), 201
 
 # this only runs if `$ python src/main.py` is executed
