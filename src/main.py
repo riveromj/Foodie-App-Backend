@@ -18,7 +18,7 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
-
+HOST = "https://3000-ed542743-ef07-4d5c-a241-d1227819290b.ws-eu03.gitpod.io/"
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -44,11 +44,11 @@ def handle_hello():
 def create_recipe():
     body=request.get_json()
    # print(body)
-    new_recipe=Recipe(body['title'],body['image'],body['ingredients'],body['elaboration'])
+    new_recipe=Recipe(body['title'],body['image'],body['ingredients'],body['elaboration'],body['num_comment'])
     db.session.add(new_recipe)
     db.session.commit()
     print(new_recipe.serialize())
-    return jsonify('receta creda'),200
+    return jsonify('recipe successfully created'),201
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
