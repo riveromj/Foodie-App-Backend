@@ -11,12 +11,13 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
     def __init__(self, user_name, email, password):
-        self.id = id
         self.user_name = user_name
         self.email = email
         self.password = password
         #self.urlImg = urlImg
         self.is_active = True
+
+    def __repr__(self): return '<User %r>' % self.id   
 
     def serialize(self):
         return {

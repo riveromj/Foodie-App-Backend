@@ -33,30 +33,40 @@ def sitemap():
 
 @app.route('/user/register', methods=['POST'])
 def register_user():
-    #try:
+    try:
 
-    body = request.get_json()
-    if(body['email'] == '' or body['email'] == None):
-       return jsonify({ "msg":"Email is not send"}), 400
+        body = request.get_json()
+        print(body)
+        if(body['email'] == ''):
+            return jsonify({ "msg":"Email is not send"}), 400
+        if body['email'] is None:
+             return jsonify({ "msg":"Email is not send"}), 400    
+        if(body['password'] == '' or body['password'] is None ):
+                return jsonify({ "msg":"Password is not send"}), 400
+        if(body['user_name'] == '' or body['user_name'] is None ):
+                return jsonify({ "msg":"user_name is not send"}), 400        
 
-    if(body['password'] == '' or body['password'] == None ):
-            return jsonify({ "msg":"Password is not send"}), 400
+        new_pass = encrypted_pass(body['password'])
+        print(new_pass)
+        new_user = User(body['user_name'], body['email'], new_pass)
+        print(new_user)
+        db.session.add(new_user)
+        db.session.commit()
+        response_body = {
+            "msg": new_user.serialize()
+         }
+        return jsonify(response_body), 201
 
-    new_pass = encrypted_pass(body['password'])
-    new_user = User(body['user_name'], body['email'], new_pass)
-    print(new_user)
-    db.session.add(new_user)
-    db.session.commit()
-    #response_body = {
-    #    "msg": new_user.serialize()
-    # }
-    #return jsonify(response_body), 201
-
-   # except:
+    except OSError as error:
+        print(error)
        # response_body = {
         #    "msg":"User exist"
         #}
-    return jsonify("response_body"), 400
+        return jsonify("error"), 400
+
+    except KeyError as error:
+        print(error)    
+        return jsonify("error del KeyError" + str(error)), 400
 
     @app.route('/user/login', methods=['POST'])
     def login_user():

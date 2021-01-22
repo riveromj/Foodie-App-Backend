@@ -5,4 +5,4 @@ def encrypted_pass(password):
     return hashed
 
 def compare_pass(password, hashed):
-    return bcrypt.checkpw(password.encode('utf-8'), hashed)
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
