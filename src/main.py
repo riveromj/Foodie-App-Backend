@@ -44,23 +44,29 @@ def sitemap():
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
     body = dict(request.form)
-    new_file = request.files['image']
-    file_name = secure_filename(new_file.filename)
-    #validar la extension de la foto .jpg o .png
-    exten = file_name.rsplit('.')
-    if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
-    #validacion si el nombre de la imagen ya existe en db
-        if os.path.exists('./src/img/' + file_name):
-            num = str(randrange(100))+'.'
-            file_name = file_name.replace('.', num)
-        new_file.save(os.path.join('./src/img', file_name))
-        url = HOST + file_name
-        new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
-        db.session.add(new_recipe)
-        db.session.commit()
-        return jsonify(new_recipe.serialize()),201
+    filename = request.form.get('image')
+    if filename != '':
+        new_file = request.files['image']
+   
+        #if new_file.filename != '': falta validar que exista un archivo
+        file_name = secure_filename(new_file.filename)
+        #validar la extension de la foto .jpg o .png
+        exten = file_name.rsplit('.')
+        if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
+        #validacion si el nombre de la imagen ya existe en db
+            if os.path.exists('./src/img/' + file_name):
+                num = str(randrange(100))+'.'
+                file_name = file_name.replace('.', num)
+            new_file.save(os.path.join('./src/img', file_name))
+            url = HOST + file_name
+            new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
+            db.session.add(new_recipe)
+            db.session.commit()
+            return jsonify(new_recipe.serialize()),201
+        else:
+            return jsonify('extencion de archivo no permitido'),200
     else:
-        return jsonify('extencion de archivo no permitido'),200
+        return jsonify('no hay archivo'),400
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
