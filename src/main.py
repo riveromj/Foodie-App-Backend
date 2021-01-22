@@ -9,7 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
-from encrypted import encrypted_pass
+from encrypted import encrypted_pass, compare_pass
 #from models import Person
 
 app = Flask(__name__)
@@ -33,30 +33,48 @@ def sitemap():
 
 @app.route('/user/register', methods=['POST'])
 def register_user():
-    try:
-        body = request.get_json()
-        if(
-            body['email'] == '' or body['email'] == None):
-            return jsonify({"msg":"Email is not send"}), 400
-        if(
-            body['password'] == "" or body['password'] == None):
-            return jsonify({"msg":"Password id not send"}), 400
-        
-        new_pass = encrypted_pass(body['password'])
-        new_user = User(body['email'], new_pass, body['image'])
-        db.session.add(new_user)
-        db.session.commit()
-        print("estoy en new_user", new_user)
-        response_body ={
-            "msg": new_user.serialize()
-        }
-        return jsonify(response_body), 201
+    #try:
 
-    except:
-        response_body = {
-            "msg":"User exist"
-        }
-        return jsonify(response_body),400
+    body = request.get_json()
+    if(body['email'] == '' or body['email'] == None):
+       return jsonify({ "msg":"Email is not send"}), 400
+
+    if(body['password'] == '' or body['password'] == None ):
+            return jsonify({ "msg":"Password is not send"}), 400
+
+    new_pass = encrypted_pass(body['password'])
+    new_user = User(body['user_name'], body['email'], new_pass)
+    print(new_user)
+    db.session.add(new_user)
+    db.session.commit()
+    #response_body = {
+    #    "msg": new_user.serialize()
+    # }
+    #return jsonify(response_body), 201
+
+   # except:
+       # response_body = {
+        #    "msg":"User exist"
+        #}
+    return jsonify("response_body"), 400
+
+    @app.route('/user/login', methods=['POST'])
+    def login_user():
+
+        auth = request.authorization
+        print(auth)
+
+        body = request.get_json()
+        user = User.query.filter_by(email=body['email']).first()
+        if(user is None):
+            return "user not exist", 401
+        is_validate = compare_pass(body['password'], user.password_bcrypt())
+        if(is_validate == False):
+            return "password incorrect", 401
+
+        token = encode_token( user.serialize() , app.config['SECRET_KEY'])
+        print(token)
+        return jsonify({ "acces_token":token}), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

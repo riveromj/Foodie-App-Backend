@@ -7,25 +7,23 @@ class User(db.Model):
     user_name = db.Column(db.String(80), unique= True, nullable= False)
     email = db.Column(db.String(120), unique = True, nullable = False)
     password = db.Column(db.String(80), unique = False, nullable= False)
-    image = db.Column(db.String(250), nullable = True)
+    urlImg = db.Column(db.Text, nullable = True)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
-    def __init__(self, email, password, image):
+    def __init__(self, user_name, email, password):
+        self.id = id
         self.user_name = user_name
         self.email = email
         self.password = password
-        self.image = image
+        #self.urlImg = urlImg
         self.is_active = True
-
-    def __repr__(self):
-        return '<User %r>' % self.email
 
     def serialize(self):
         return {
             "id": self.id,
             "user_name": self.user_name,
             "email": self.email,
-            "image": self.image
+            "urlImg": self.urlImg
 
             # do not serialize the password, its a security breach
         }
