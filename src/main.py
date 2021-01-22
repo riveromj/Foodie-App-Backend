@@ -76,6 +76,20 @@ def register_user():
         print(token)
         return jsonify({ "acces_token":token}), 200
 
+    @app.route('/user/<int:id>', methods=['GET'])
+    def get_user(id):
+        user = User.get_user(id)
+        if user:
+            return user, 200
+        else:
+            return "user do not exist", 400
+
+    @app.route('user/<int:id>', methods=['DELETE'])
+    def delete_user(id):
+        user = User.delete_user(id)
+        if user:
+            return jsonify("User erased"), 200    
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
