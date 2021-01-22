@@ -44,11 +44,17 @@ def sitemap():
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
     body = dict(request.form)
+    #validar los inputs de la receta title ingredients y elaboration
+    if request.form.get('title')=='' or request.form.get('title')==None:
+        return jsonify("Title cannot be empty"),400
+    if request.form.get('ingredients')=='' or request.form.get('ingredients')==None:
+        return jsonify("Ingredients cannot be empty"),400
+    if request.form.get('elaboration')=='' or request.form.get('elaboration')==None:
+        return jsonify("Elaboration cannot be empty"),400
+    #validar que exista un archivo
     filename = request.form.get('image')
     if filename != '':
         new_file = request.files['image']
-   
-        #if new_file.filename != '': falta validar que exista un archivo
         file_name = secure_filename(new_file.filename)
         #validar la extension de la foto .jpg o .png
         exten = file_name.rsplit('.')
@@ -64,7 +70,7 @@ def create_recipe():
             db.session.commit()
             return jsonify(new_recipe.serialize()),201
         else:
-            return jsonify('extencion de archivo no permitido'),200
+            return jsonify('extencion de archivo no permitido'),00
     else:
         return jsonify('no hay archivo'),400
 
