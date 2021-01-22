@@ -34,7 +34,6 @@ def sitemap():
 @app.route('/user/register', methods=['POST'])
 def register_user():
     try:
-
         body = request.get_json()
         print(body)
         if(body['email'] == ''):
@@ -44,12 +43,10 @@ def register_user():
         if(body['password'] == '' or body['password'] is None ):
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
-                return jsonify({ "msg":"user_name is not send"}), 400        
+                return jsonify({ "msg":"user_name is not send"}), 400  
 
         new_pass = encrypted_pass(body['password'])
-        print(new_pass)
         new_user = User(body['user_name'], body['email'], new_pass)
-        print(new_user)
         db.session.add(new_user)
         db.session.commit()
         response_body = {
@@ -58,33 +55,24 @@ def register_user():
         return jsonify(response_body), 201
 
     except OSError as error:
-        print(error)
-       # response_body = {
-        #    "msg":"User exist"
-        #}
         return jsonify("error"), 400
 
-    except KeyError as error:
-        print(error)    
+    except KeyError as error:      
         return jsonify("error del KeyError" + str(error)), 400
 
     @app.route('/user/login', methods=['POST'])
     def login_user():
-
-        auth = request.authorization
-        print(auth)
-
-        body = request.get_json()
+        
+        body = request.get_json()    
         user = User.query.filter_by(email=body['email']).first()
         if(user is None):
             return "user not exist", 401
         is_validate = compare_pass(body['password'], user.password_bcrypt())
         if(is_validate == False):
             return "password incorrect", 401
+        else:
+            return jsonify(login_user())
 
-        token = encode_token( user.serialize() , app.config['SECRET_KEY'])
-        print(token)
-        return jsonify({ "acces_token":token}), 200
 
     @app.route('/user/<int:id>', methods=['GET'])
     def get_user(id):
