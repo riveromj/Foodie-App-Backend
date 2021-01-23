@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 import datetime
 
 db = SQLAlchemy()
@@ -11,8 +12,8 @@ class Recipe(db.Model):
     elaboration = db.Column(db.String(250),nullable=False)
     num_comment = db.Column(db.Integer)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    #user_id = db.Column(db.Integer,ForeignKey('User.id'))
-    #User = relationship("User")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
+    user = relationship("User")
 
     def __init__(self, title, image, ingredients, elaboration,num_comment):
         self.title = title
