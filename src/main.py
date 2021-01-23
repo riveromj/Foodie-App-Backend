@@ -43,23 +43,25 @@ def sitemap():
 #Crear nueva receta
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
-    body = dict(request.form)
-    #validar los inputs de la receta title ingredients y elaboration
-    if request.form.get('title')=='' or request.form.get('title')==None:
-        return jsonify("Title cannot be empty"),400
-    if request.form.get('ingredients')=='' or request.form.get('ingredients')==None:
-        return jsonify("Ingredients cannot be empty"),400
-    if request.form.get('elaboration')=='' or request.form.get('elaboration')==None:
-        return jsonify("Elaboration cannot be empty"),400
-    #validar que exista un archivo
-    filename = request.form.get('image')
-    if filename != '':
+    try:
+        body = dict(request.form)
+        print(body)
+        print(request.files['image'])
+         #validar los inputs de la receta title ingredients y elaboration
+        if request.form.get('title')=='':
+            return jsonify("Title cannot be empty"),400
+        if request.form.get('ingredients')=='' :
+            return jsonify("Ingredients cannot be empty"),400
+        if request.form.get('elaboration')=='' :
+            return jsonify("Elaboration cannot be empty"),400
+        if request.files['image']=='':
+            return jsonify("Image cannot be empty"),400
         new_file = request.files['image']
         file_name = secure_filename(new_file.filename)
         #validar la extension de la foto .jpg o .png
         exten = file_name.rsplit('.')
         if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
-        #validacion si el nombre de la imagen ya existe en db
+            #validacion si el nombre de la imagen ya existe en db
             if os.path.exists('./src/img/' + file_name):
                 num = str(randrange(100))+'.'
                 file_name = file_name.replace('.', num)
@@ -68,11 +70,14 @@ def create_recipe():
             new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
             db.session.add(new_recipe)
             db.session.commit()
-            return jsonify(new_recipe.serialize()),201
+            return jsonify(new_recipe.serialize()),200
         else:
             return jsonify('extencion de archivo no permitido'),00
-    else:
-        return jsonify('no hay archivo'),400
+        return jsonify("todo bien"), 200
+    except OSError as error:
+        print(error)
+    except KeyError as error:
+        print(error)
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
@@ -88,10 +93,14 @@ def all_recipes():
 #Eliminar Receta
 @app.route('/recipe/<int:id>',methods=['DELETE'])
 def delete_recipe(id):
-    recipe= Recipe.query.filter_by(id=id)
-    recipe.delete()
-    db.session.commit()
-    return jsonify('receta eliminada'),200
+    try:
+        recipe= Recipe.query.filter_by(id=id)
+    # borrar la foto de la carpeta es opcional
+        recipe.delete()
+        db.session.commit()
+        return jsonify('receta eliminada'),200
+    except OSError as error:
+        return jsonify("error"), 400
 
 
 # this only runs if `$ python src/main.py` is executed
