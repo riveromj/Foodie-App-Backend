@@ -45,9 +45,7 @@ def sitemap():
 def create_recipe():
     try:
         body = dict(request.form)
-        print(body)
-        print(request.files['image'])
-         #validar los inputs de la receta title ingredients y elaboration
+        #validar los inputs de la receta title ingredients y elaboration
         if request.form.get('title')=='':
             return jsonify("Title cannot be empty"),400
         if request.form.get('ingredients')=='' :
@@ -75,9 +73,9 @@ def create_recipe():
             return jsonify('extencion de archivo no permitido'),00
         return jsonify("todo bien"), 200
     except OSError as error:
-        print(error)
+        return jsonify("error"), 400
     except KeyError as error:
-        print(error)
+        return jsonify("error"), 400
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
