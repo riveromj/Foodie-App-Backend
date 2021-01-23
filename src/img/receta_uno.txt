@@ -1,0 +1,6 @@
+{	    "title": "Pollo"
+            "image": "pollo.jpg",
+            "ingredients":"sal, ajo,pollo",
+            "elaboration":"mezclar",
+            "num_comment":0,
+            }
