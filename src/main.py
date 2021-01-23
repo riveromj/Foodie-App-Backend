@@ -2,17 +2,18 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from admin import setup_admin
 from flask import Flask, request, jsonify, url_for,send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
-from models import db, Recipe
 from os.path import join, dirname, realpath
 from random import randrange
 from utils import APIException, generate_sitemap
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
+from admin import setup_admin
+from models import db, User,Recipe
+from encrypted import encrypted_pass, compare_pass
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -38,7 +39,8 @@ def send_image(filename):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
-
+    
+##### METHODS RECIPE #######
 #Crear nueva receta
 @app.route('/recipe',methods=['POST'])
 def create_recipe():
@@ -103,6 +105,54 @@ def delete_recipe(id):
         return jsonify('receta eliminada'),200
     except OSError as error:
         return jsonify("error"), 400
+
+#######   METHODS USER ##########
+@app.route('/user/register', methods=['POST'])
+def register_user():
+    try:
+        body = request.get_json()    
+        if(body['email'] == ''):
+            return jsonify({ "msg":"Email is not send"}), 400
+        if body['email'] is None:
+             return jsonify({ "msg":"Email is not send"}), 400    
+        if(body['password'] == '' or body['password'] is None ):
+                return jsonify({ "msg":"Password is not send"}), 400
+        if(body['user_name'] == '' or body['user_name'] is None ):
+                return jsonify({ "msg":"user_name is not send"}), 400  
+
+        new_pass = encrypted_pass(body['password'])
+        new_user = User(body['user_name'], body['email'], new_pass)
+        db.session.add(new_user)
+        db.session.commit()
+        response_body = {
+            "msg": new_user.serialize()
+         }
+        return jsonify(response_body), 201
+
+    except OSError as error:
+        return jsonify("error"), 400
+
+    except KeyError as error:      
+        return jsonify("error del KeyError" + str(error)), 400
+
+@app.route('/user/login', methods=['POST'])
+def login_user():
+    try:    
+        body = request.get_json()    
+        user = User.query.filter_by(email=body['email']).first()   
+        if(user is None):
+            return "user not exist", 401  
+        is_validate = compare_pass(body['password'], user.password_bcrypt())
+        if(is_validate == False):
+            return "password incorrect", 401
+        
+        return jsonify(user.serialize())
+
+    except OSError as error:
+        return jsonify("error"), 400
+
+    except KeyError as error:      
+        return jsonify("error del KeyError" + str(error)), 400
 
 
 # this only runs if `$ python src/main.py` is executed
