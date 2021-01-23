@@ -74,19 +74,24 @@ def create_recipe():
         return jsonify("todo bien"), 200
     except OSError as error:
         return jsonify("error"), 400
-    except KeyError as error:
-        return jsonify("error"), 400
+    except KeyError as error_key:
+        return jsonify("error_key"), 400
 
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
 def all_recipes():
-    todo_recipes= db.session.query(Recipe).all()
-    print(todo_recipes)
-    new_list=[]
-    for recipe in todo_recipes:
-        new_list.append(recipe.serialize())
-        print(new_list)
-    return jsonify(new_list),200
+    try:
+        todo_recipes= db.session.query(Recipe).all()
+        print(todo_recipes)
+        new_list=[]
+        for recipe in todo_recipes:
+            new_list.append(recipe.serialize())
+            print(new_list)
+        return jsonify(new_list),200
+    except OSError as error:
+        return jsonify("error"),400
+    except KeyError as error_key:
+        return jsonify("error_key"),400
 
 #Eliminar Receta
 @app.route('/recipe/<int:id>',methods=['DELETE'])
