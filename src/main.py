@@ -60,33 +60,41 @@ def register_user():
     except KeyError as error:      
         return jsonify("error del KeyError" + str(error)), 400
 
-    @app.route('/user/login', methods=['POST'])
-    def login_user():
-        
+@app.route('/user/login', methods=['POST'])
+def login_user():
+    try:    
         body = request.get_json()    
         user = User.query.filter_by(email=body['email']).first()
+        print(user)
         if(user is None):
             return "user not exist", 401
+        print('antes de la validacion')    
         is_validate = compare_pass(body['password'], user.password_bcrypt())
         if(is_validate == False):
             return "password incorrect", 401
-        else:
-            return jsonify(login_user())
+        #else:
+        return jsonify(user.serialize())
 
+    except OSError as error:
+        return jsonify("error"), 400
 
-    @app.route('/user/<int:id>', methods=['GET'])
-    def get_user(id):
-        user = User.get_user(id)
-        if user:
-            return user, 200
-        else:
-            return "user do not exist", 400
+    except KeyError as error:      
+        return jsonify("error del KeyError" + str(error)), 400
 
-    @app.route('user/<int:id>', methods=['DELETE'])
-    def delete_user(id):
-        user = User.delete_user(id)
-        if user:
-            return jsonify("User erased"), 200    
+@app.route('/user/<int:id>', methods=['GET'])
+def get_user(id):
+    print(id)
+    user = User.get_user(id)
+    if user:
+        return user, 200
+    else:
+        return "user do not exist", 400
+
+@app.route('/ser/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    user = User.delete_user(id)
+    if user:
+        return jsonify("User erased"), 200    
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
