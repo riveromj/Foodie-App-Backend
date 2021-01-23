@@ -34,8 +34,7 @@ def sitemap():
 @app.route('/user/register', methods=['POST'])
 def register_user():
     try:
-        body = request.get_json()
-        print(body)
+        body = request.get_json()    
         if(body['email'] == ''):
             return jsonify({ "msg":"Email is not send"}), 400
         if body['email'] is None:
@@ -64,15 +63,13 @@ def register_user():
 def login_user():
     try:    
         body = request.get_json()    
-        user = User.query.filter_by(email=body['email']).first()
-        print(user)
+        user = User.query.filter_by(email=body['email']).first()   
         if(user is None):
-            return "user not exist", 401
-        print('antes de la validacion')    
+            return "user not exist", 401  
         is_validate = compare_pass(body['password'], user.password_bcrypt())
         if(is_validate == False):
             return "password incorrect", 401
-        #else:
+        
         return jsonify(user.serialize())
 
     except OSError as error:
@@ -83,7 +80,7 @@ def login_user():
 
 @app.route('/user/<int:id>', methods=['GET'])
 def get_user(id):
-    print(id)
+    
     user = User.get_user(id)
     if user:
         return user, 200
