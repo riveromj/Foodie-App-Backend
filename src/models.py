@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
+import datetime
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -14,7 +14,6 @@ class User(db.Model):
         self.user_name = user_name
         self.email = email
         self.password = password
-        #self.urlImg = urlImg
         self.is_active = True
 
     def __repr__(self): return '<User %r>' % self.id   
@@ -28,6 +27,7 @@ class User(db.Model):
 
             # do not serialize the password, its a security breach
         }
+
     def password_bcrypt(self):
         return self.password
     
