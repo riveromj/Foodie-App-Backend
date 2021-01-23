@@ -34,7 +34,6 @@ def handle_invalid_usage(error):
 def send_image(filename):
     return send_file('./img/'+filename)
 
-
 # generate sitemap with all your endpoints
 @app.route('/')
 def sitemap():

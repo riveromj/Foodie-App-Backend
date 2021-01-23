@@ -13,7 +13,6 @@ class Recipe(db.Model):
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     #user_id = db.Column(db.Integer,ForeignKey('User.id'))
     #User = relationship("User")
-   # is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
     def __init__(self, title, image, ingredients, elaboration,num_comment):
         self.title = title
@@ -21,7 +20,6 @@ class Recipe(db.Model):
         self.ingredients = ingredients
         self.elaboration = elaboration
         self.num_comment = num_comment
-       # self.is_active = True
 
     def serialize(self):
         return {
