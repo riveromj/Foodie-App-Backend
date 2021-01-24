@@ -30,6 +30,12 @@ class User(db.Model):
 
     def password_bcrypt(self):
         return self.password
+
+    def get_member(self, id):
+        for member in self._members:
+            if member["id"] == id:
+                return member
+        return None 
     
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)

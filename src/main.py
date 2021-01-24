@@ -78,6 +78,12 @@ def login_user():
     except KeyError as error:      
         return jsonify("error del KeyError" + str(error)), 400
 
+@app.route('/member/<int:id>', methods=['GET'])
+def get_one_member(id):
+    user = User.get_member(id)
+    if user:
+        return user, 200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
