@@ -22,6 +22,9 @@ class Recipe(db.Model):
         self.elaboration = elaboration
         self.num_comment = num_comment
         self.user_id = user_id
+
+    def __str__(self):  # sustituye a def __repr__ es la forma mas actualizada de python        
+       return '{} <{}>' .format(self.user_name, self.email)
         
     def serialize(self):
         return {
@@ -32,7 +35,8 @@ class Recipe(db.Model):
             "elaboration":self.elaboration,
             "num_comment":self.num_comment,
             "date_recipe":self.date_recipe,
-            "user_id":self.user_id
+            "user_id":self.user_id,
+            "user_name":self.user.user_name
         }
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -41,6 +45,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique = False, nullable= False)
     urlImg = db.Column(db.Text, nullable = True)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False)
+    #recipce=  relationship("Recipe") para borrar las recetas del usuario
 
     def __init__(self, user_name, email, password):
         self.user_name = user_name
@@ -48,7 +53,9 @@ class User(db.Model):
         self.password = password
         self.is_active = True
 
-    def __repr__(self): return '<User %r>' % self.id   
+   #def __repr__(self): return '<User %r>' % self.user_name 
+    def __str__(self):  # sustituye a repr         
+       return '{} <{}>' .format(self.user_name, self.email)  
 
     def serialize(self):
         return {

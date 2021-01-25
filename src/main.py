@@ -42,16 +42,13 @@ def sitemap():
 
 ##### METHODS RECIPE #######
 #Crear nueva receta
-@app.route('/recipe/<int:id>',methods=['POST'])
+@app.route('/user/<int:id>/recipe',methods=['POST'])
 def create_recipe(id):
     try:
-       # print(id)
-        #como validar que el usuario esta en db
-       # user_select = db.session.query(User).filter_by(id=id).all()
-       # for user in user_select:
-           # print(user.user_name, user.id, "############")
-       # if id == id:
-            #recipe= Recipe.query.filter_by(id=id)
+        #como validar que el usuario esta en db necesito TOKEN
+        user_select = db.session.query(User).filter_by(id=id).first()
+        if not user_select:
+            return jsonify("User not found"),404
         body = dict(request.form)
             #validar los inputs de la receta title ingredients y elaboration
         if request.form.get('title')=='':
@@ -80,8 +77,6 @@ def create_recipe(id):
         else:
             return jsonify('extencion de archivo no permitido'),400
         return jsonify("todo bien"), 200
-        #else:
-           # return jsonify('el usuario no existe'),400
     except OSError as error:
         return jsonify("error"), 400
     except KeyError as error_key:
@@ -92,7 +87,6 @@ def create_recipe(id):
 def user_recipes(id):
     try:
         todo_recipes= db.session.query(Recipe).filter_by(user_id=id).all()
-        print(todo_recipes,'*********')
         new_list=[]
         for recipe in todo_recipes:
             new_list.append(recipe.serialize())
@@ -102,7 +96,7 @@ def user_recipes(id):
         return jsonify("error"),400
     except KeyError as error_key:
         return jsonify("error_key"),400
-#Consulta de todas las recetas
+#Consulta de todas las recetas para Home 
 @app.route('/recipe',methods=['GET'])
 def all_recipes():
     try:
@@ -118,7 +112,7 @@ def all_recipes():
     except KeyError as error_key:
         return jsonify("error_key"),400
 
-#Eliminar Receta
+#Eliminar Receta con el id de la receta
 @app.route('/recipe/<int:id>',methods=['DELETE'])
 def delete_recipe(id):
     try:
