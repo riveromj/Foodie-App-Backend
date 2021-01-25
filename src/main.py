@@ -39,14 +39,21 @@ def send_image(filename):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
-    
+
 ##### METHODS RECIPE #######
 #Crear nueva receta
-@app.route('/recipe',methods=['POST'])
-def create_recipe():
+@app.route('/recipe/<int:id>',methods=['POST'])
+def create_recipe(id):
     try:
+       # print(id)
+        #como validar que el usuario esta en db
+       # user_select = db.session.query(User).filter_by(id=id).all()
+       # for user in user_select:
+           # print(user.user_name, user.id, "############")
+       # if id == id:
+            #recipe= Recipe.query.filter_by(id=id)
         body = dict(request.form)
-        #validar los inputs de la receta title ingredients y elaboration
+            #validar los inputs de la receta title ingredients y elaboration
         if request.form.get('title')=='':
             return jsonify("Title cannot be empty"),400
         if request.form.get('ingredients')=='' :
@@ -66,18 +73,35 @@ def create_recipe():
                 file_name = file_name.replace('.', num)
             new_file.save(os.path.join('./src/img', file_name))
             url = HOST + file_name
-            new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'])
+            new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'],id)
             db.session.add(new_recipe)
             db.session.commit()
             return jsonify(new_recipe.serialize()),200
         else:
-            return jsonify('extencion de archivo no permitido'),00
+            return jsonify('extencion de archivo no permitido'),400
         return jsonify("todo bien"), 200
+        #else:
+           # return jsonify('el usuario no existe'),400
     except OSError as error:
         return jsonify("error"), 400
     except KeyError as error_key:
-        return jsonify("error_key"), 400
+        return jsonify("error_key" + str(error_key)), 400
 
+#Consultar las recetar por usuario
+@app.route('/recipe/<int:id>',methods=['GET'])
+def user_recipes(id):
+    try:
+        todo_recipes= db.session.query(Recipe).filter_by(user_id=id).all()
+        print(todo_recipes,'*********')
+        new_list=[]
+        for recipe in todo_recipes:
+            new_list.append(recipe.serialize())
+            print(new_list)
+        return jsonify(new_list),200
+    except OSError as error:
+        return jsonify("error"),400
+    except KeyError as error_key:
+        return jsonify("error_key"),400
 #Consulta de todas las recetas
 @app.route('/recipe',methods=['GET'])
 def all_recipes():

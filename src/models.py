@@ -15,12 +15,14 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     user = relationship("User")
 
-    def __init__(self, title, image, ingredients, elaboration,num_comment):
+    def __init__(self, title, image, ingredients, elaboration,num_comment,user_id):
         self.title = title
         self.image = image
         self.ingredients = ingredients
         self.elaboration = elaboration
         self.num_comment = num_comment
+        self.user_id = user_id
+        
     def serialize(self):
         return {
             "id": self.id,
@@ -30,6 +32,7 @@ class Recipe(db.Model):
             "elaboration":self.elaboration,
             "num_comment":self.num_comment,
             "date_recipe":self.date_recipe,
+            "user_id":self.user_id
         }
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
