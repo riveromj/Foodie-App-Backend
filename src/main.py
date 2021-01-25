@@ -101,6 +101,22 @@ def delete_user(id):
     print(user)
     return jsonify('user borrado'), 200 
 
+@app.route('/user/<int:id>', methods=['PUT'])
+def update_user(id):
+    body = request.get_json()  
+    user = db.session.query(User).filter_by(id=id).first()
+    #user.user_name = request.json(user_name)
+    #user.user_name = "new_user_name"
+    new_user_name = User(body['user_name'], body['email'], body['password'])
+    db.session.add(new_user_name)
+    db.session.commit()
+    print(new_user_name, "++++++++++++++++")
+    response_body = {
+            "msg": new_user_name.serialize()
+        }
+    return jsonify(response_body), 201
+    
+    
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
