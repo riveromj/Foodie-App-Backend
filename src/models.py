@@ -34,9 +34,9 @@ class User(db.Model):
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text  = db.Column(db.String(250),nullable=False)
-    date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    user_id = db.Column(db.Integer, primary_key=True)
-    recipe_id = db.Column(db.Integer, primary_key=True)
+    date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    user_id = db.Column(db.Integer)
+    recipe_id = db.Column(db.Integer)
 
     #def __repr__(self):
         #return '<User %r>' % self.username
