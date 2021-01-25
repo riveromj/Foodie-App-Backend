@@ -49,4 +49,35 @@ class Comments(db.Model):
             "user_id": self.user_id,
             "recipe_id": self.recipe_id
         }
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name_category = db.Column(db.String(250),unique= True,nullable=False)
+
+    def __init__(self, name_category):
+        self.name_category =name_category
+
+    def serialize(self):
+        return{
+            "id":self.id,
+            "name_categoy": self.name_category
+        }
+class Recipe_Category(dm.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
+    id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
+    category = relationship("Category")
+    recipe = relationship("Recipe")
+
+    def __init__(self, id_category,id_recipe):
+        self.id_category = id_category
+        self.id_recipe = id_recipe
+
+    def serialize(self):
+        return{
+            "id":self.id,
+            "id_category":self.id_category,
+            "id_recipe":self.id_recipe
+        }
+       
+
       
