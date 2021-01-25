@@ -80,9 +80,17 @@ def login_user():
 
 @app.route('/member/<int:id>', methods=['GET'])
 def get_one_member(id):
-    user = User.get_member(id)
-    if user:
-        return user, 200
+    try:
+        user = db.session.query(User).filter_by(id=id).first()
+        print(user.user_name)
+        print(user.id, "****************")  
+       # if user:
+        return jsonify(user.serialize()), 200
+    except OSError as error:
+        return jsonify("error"), 400
+
+    except KeyError as error:      
+        return jsonify("error del KeyError" + str(error)), 400    
 
 
 # this only runs if `$ python src/main.py` is executed
