@@ -117,12 +117,14 @@ def all_recipes():
 def delete_recipe(id):
     try:
         recipe= Recipe.query.filter_by(id=id)
-    # borrar la foto de la carpeta es opcional
+        query_url= Recipe.query.filter_by(id=id).first() 
+        url_photo = query_url.image.rsplit('/')
         recipe.delete()
         db.session.commit()
+        os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
         return jsonify('receta eliminada'),200
     except OSError as error:
-        return jsonify("error"), 400
+        return jsonify("error" + str(error)), 400
 
 #######   METHODS USER ##########
 @app.route('/user/register', methods=['POST'])

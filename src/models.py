@@ -24,7 +24,7 @@ class Recipe(db.Model):
         self.user_id = user_id
 
     def __str__(self):  # sustituye a def __repr__ es la forma mas actualizada de python        
-       return '{} <{}>' .format(self.user_name, self.email)
+       return '{} <{}>' .format(self.title, self.image)
         
     def serialize(self):
         return {
