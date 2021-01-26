@@ -10,16 +10,46 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
 from encrypted import encrypted_pass, compare_pass
+
+from jwt_auth import encode_token, decode_token
+import jwt
 #from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'thisisasuperkey'
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
+#decorador
+
+def token_required(f):
+    @wraps(f)
+    def decorador(*args , **kwargs ):
+        try:
+            auth = request.headers.get('Authorization')
+            if auth is None:
+                return jsonify("no token"), 403
+            token = auth.split(' ')
+            data = decode_token(token[1], app.config['SECRET_KEY'] )
+            user = User.query.get(data['user']['id'])
+            if user is None:
+                return jsonify("no authorization"), 401
+
+        except OSError as err:
+            print(err)
+            return jsonify("no authorization"), 401
+
+        except jwt.exceptions.ExpiredSignatureError as err:
+            print(err)
+            return jsonify("expired token"), 403
+
+        return f(*args , **kwargs)
+    return decorador
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -69,8 +99,8 @@ def login_user():
         is_validate = compare_pass(body['password'], user.password_bcrypt())
         if(is_validate == False):
             return "password incorrect", 401
-        
-        return jsonify(user.serialize())
+        token=encode_token(user.serialize(), app.config['SECRET_KEY'])
+        return jsonify({"access_token":token})
 
     except OSError as error:
         return jsonify("error"), 400

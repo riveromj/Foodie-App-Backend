@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -63,22 +64,22 @@ class Category(db.Model):
             "id":self.id,
             "name_categoy": self.name_category
         }
-class Recipe_Category(dm.Model):
+class Recipe_Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
-    id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
+    #id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
     category = relationship("Category")
-    recipe = relationship("Recipe")
+   #recipe = relationship("Recipe")
 
-    def __init__(self, id_category,id_recipe):
+    def __init__(self, id_category):
         self.id_category = id_category
-        self.id_recipe = id_recipe
+       # self.id_recipe = id_recipe
 
     def serialize(self):
         return{
             "id":self.id,
             "id_category":self.id_category,
-            "id_recipe":self.id_recipe
+            #"id_recipe":self.id_recipe
         }
        
 
