@@ -1,6 +1,6 @@
 import os
 from flask_admin import Admin
-from models import db, User, Comments
+from models import db, User, Comments, Category, Recipe_Category
 from flask_admin.contrib.sqla import ModelView
 
 def setup_admin(app):
