@@ -105,14 +105,11 @@ def delete_user(id):
 def update_user(id):
     body = request.get_json()  
     user = db.session.query(User).filter_by(id=id).first()
-    #user.user_name = request.json(user_name)
-    #user.user_name = "new_user_name"
-    new_user_name = User(body['user_name'], body['email'], body['password'])
-    db.session.add(new_user_name)
+    user.user_name = body['user_name']
     db.session.commit()
-    print(new_user_name, "++++++++++++++++")
+    print(user, body)
     response_body = {
-            "msg": new_user_name.serialize()
+            "msg": user.serialize()
         }
     return jsonify(response_body), 201
     
