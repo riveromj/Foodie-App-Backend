@@ -126,22 +126,6 @@ def delete_recipe(id):
     except OSError as error:
         return jsonify("error" + str(error)), 400
 
-#Update Recipe
-@app.route('/recipe/<int:id>/<title>', methods=['PUT']) #aun no funciona
-def update_recipe(id,title):
-    try:
-        query_update = db.session.query(Recipe).filter_by(id=id).first()
-        if query_update is None:
-            return jsonify('receta no encontrada'),404
-        print(query_update,'------------------------------')
-        query_update.title = title
-        db.session.add(query_update)
-        db.session.commit()
-        return jsonify('receta Modificada'),200
-    except OSError as error:
-        return jsonify("error" + str(error)), 400
-
-
 #######   METHODS USER ##########
 @app.route('/user/register', methods=['POST'])
 def register_user():
