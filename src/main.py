@@ -65,10 +65,8 @@ def sitemap():
 def register_user():
     try:
         body = request.get_json()    
-        if(body['email'] == ''):
-            return jsonify({ "msg":"Email is not send"}), 400
-        if body['email'] is None:
-             return jsonify({ "msg":"Email is not send"}), 400    
+        if(body['email'] == '' or body['email']== None):
+            return jsonify({ "msg":"Email is not send"}), 400       
         if(body['password'] == '' or body['password'] is None ):
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
