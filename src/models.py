@@ -30,6 +30,8 @@ class User(db.Model):
 
     def password_bcrypt(self):
         return self.password
+
+  
     
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)

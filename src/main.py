@@ -78,6 +78,42 @@ def login_user():
     except KeyError as error:      
         return jsonify("error del KeyError" + str(error)), 400
 
+@app.route('/user/<int:id>', methods=['GET'])
+def get_one_member(id):
+    try:
+        user = db.session.query(User).filter_by(id=id).first()
+        print(user.user_name)
+        print(user.id, "****************")  
+       # if user:
+        return jsonify(user.serialize()), 200
+    except OSError as error:
+        return jsonify("error"), 400
+
+    except KeyError as error:      
+        return jsonify("error del KeyError" + str(error)), 400   
+
+@app.route('/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    print(id)
+    user = User.query.get(id)
+    db.session.delete(user)
+    db.session.commit()
+    print(user)
+    return jsonify('user borrado'), 200 
+
+@app.route('/user/<int:id>', methods=['PUT'])
+def update_user(id):
+    body = request.get_json()  
+    user = db.session.query(User).filter_by(id=id).first()
+    user.user_name = body['user_name']
+    db.session.commit()
+    print(user, body)
+    response_body = {
+            "msg": user.serialize()
+        }
+    return jsonify(response_body), 201
+    
+    
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
