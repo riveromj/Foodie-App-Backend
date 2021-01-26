@@ -26,7 +26,8 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
-
+#host para armar la url de la imagen
+HOST = "https://3000-ed542743-ef07-4d5c-a241-d1227819290b.ws-eu03.gitpod.io/" 
 #decorador
 
 def token_required(f):
@@ -177,7 +178,7 @@ def create_recipe(id):
             if os.path.exists('./src/img/' + file_name):
                 num = str(randrange(100))+'.'
                 file_name = file_name.replace('.', num)
-            new_file.save(os.path.join('./src/img', file_name))
+            new_file.save(os.path.join('./src/img/', file_name))
             url = HOST + file_name
             new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'],id)
             db.session.add(new_recipe)
@@ -187,7 +188,7 @@ def create_recipe(id):
             return jsonify('extencion de archivo no permitido'),400
         return jsonify("todo bien"), 200
     except OSError as error:
-        return jsonify("error"), 400
+        return jsonify("error" +str(error)), 400
     except KeyError as error_key:
         return jsonify("error_key" + str(error_key)), 400
 
