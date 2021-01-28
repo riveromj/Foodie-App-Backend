@@ -78,9 +78,7 @@ def register_user():
         if(body['password'] == '' or body['password'] is None ):
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
-                return jsonify({ "msg":"user_name is not send"}), 400 
-       
-                              
+                return jsonify({ "msg":"user_name is not send"}), 400
         new_pass = encrypted_pass(body['password'])
         new_user = User(body['user_name'], body['email'], new_pass)
         db.session.add(new_user)
@@ -140,9 +138,25 @@ def delete_user(id):
 
 @app.route('/user/<int:id>', methods=['PUT'])
 def update_user(id):
-    body = request.get_json()  
+    body = dict(request.form)
+    print(body) 
     user = db.session.query(User).filter_by(id=id).first()
     user.user_name = body['user_name']
+    #user.urlImg = body['urlImg']
+
+    #>>>>>Abajo prueba codigo Mari del PUT recipe  
+    new_file = request.files['urlImg']
+    file_name = secure_filename(new_file.filename)
+        #validar la extension de la foto .jpg o .png
+    exten = file_name.rsplit('.')
+    if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
+        #validacion si el nombre de la imagen ya existe en db
+        if os.path.exists('./src/img/' + file_name):
+            num = str(randrange(100))+'.'
+            file_name = file_name.replace('.', num)
+        new_file.save(os.path.join('./src/img/', file_name))
+        url = HOST + file_name
+    #>>>>>>>>>>>>>>Hasta aquí código Mari del PUT recipe        
     db.session.commit()
     print(user, body)
     response_body = {
