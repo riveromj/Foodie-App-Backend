@@ -186,7 +186,7 @@ def create_recipe(id):
             return jsonify(new_recipe.serialize()),200
         else:
             return jsonify('extencion de archivo no permitido'),400
-        return jsonify("todo bien"), 200
+        return jsonify("todo bien"), 201
     except OSError as error:
         return jsonify("error" +str(error)), 400
     except KeyError as error_key:
@@ -233,6 +233,44 @@ def delete_recipe(id):
         db.session.commit()
         os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
         return jsonify('receta eliminada'),200
+    except OSError as error:
+        return jsonify("error" + str(error)), 400
+#Update Recipe
+@app.route('/recipe/<int:id>', methods=['PUT']) #aun no funciona
+def update_recipe(id):
+    try:
+        body = dict(request.form)
+        query_update = db.session.query(Recipe).filter_by(id=id).first()
+        if query_update is None:
+            return jsonify('receta no encontrada'),404
+        #Validaciones del formulario
+         #validar los inputs de la receta imagen, title, ingredients y elaboration
+        if request.form.get('title')=='':
+            return jsonify("Title cannot be empty"),400
+        if request.form.get('ingredients')=='' :
+            return jsonify("Ingredients cannot be empty"),400
+        if request.form.get('elaboration')=='' :
+            return jsonify("Elaboration cannot be empty"),400
+        if request.files['image']=='':
+            return jsonify("Image cannot be empty"),400
+        new_file = request.files['image']
+        file_name = secure_filename(new_file.filename)
+        #validar la extension de la foto .jpg o .png
+        exten = file_name.rsplit('.')
+        if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
+            #validacion si el nombre de la imagen ya existe en db
+            if os.path.exists('./src/img/' + file_name):
+                num = str(randrange(100))+'.'
+                file_name = file_name.replace('.', num)
+            new_file.save(os.path.join('./src/img/', file_name))
+            url = HOST + file_name
+        #UPDATE
+        query_update.title = body['title']
+        query_update.image = url
+        query_update.ingredients = body['ingredients']
+        query_update.elaboration = body['elaboration']
+        db.session.commit()
+        return jsonify('receta Modificada'),200
     except OSError as error:
         return jsonify("error" + str(error)), 400
 
