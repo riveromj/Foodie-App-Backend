@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -79,26 +79,17 @@ def register_user():
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
                 return jsonify({ "msg":"user_name is not send"}), 400 
-        new_file = request.files['image']
-        file_name = secure_filename(new_file.filename)
-        #validar la extension de la foto .jpg o .png
-        exten = file_name.rsplit('.')
-        if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
-            #validacion si el nombre de la imagen ya existe en db
-            if os.path.exists('./src/img/' + file_name):
-                num = str(randrange(100))+'.'
-                file_name = file_name.replace('.', num)
-            new_file.save(os.path.join('./src/img/', file_name))
-            urlImg = HOST + file_name                   
+       
+                              
         new_pass = encrypted_pass(body['password'])
-        new_user = User(body['user_name'], body['email'], new_pass, urlImg)
+        new_user = User(body['user_name'], body['email'], new_pass)
         db.session.add(new_user)
         db.session.commit()
         response_body = {
             "msg": new_user.serialize()
          }
         return jsonify(response_body), 201
-
+    
     except OSError as error:
         return jsonify("error"), 400
 
