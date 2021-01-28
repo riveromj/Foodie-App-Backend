@@ -3,12 +3,14 @@ import datetime
 from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_name = db.Column(db.String(80), unique= True, nullable= False)
     email = db.Column(db.String(120), unique = True, nullable = False)
     password = db.Column(db.String(80), unique = False, nullable= False)
-    urlImg = db.Column(db.Text, nullable = True)
+    urlImg = db.Column(db.Text, nullable = True, default = 'src/img/default_user_profile.svg')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
     def __init__(self, user_name, email, password):
