@@ -67,20 +67,56 @@ class Category(db.Model):
 class Recipe_Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
-    #id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
+    id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
     category = relationship("Category")
-   #recipe = relationship("Recipe")
+    recipe = relationship("Recipe")
 
-    def __init__(self, id_category):
+    def __init__(self, id_category,id_recipe):
         self.id_category = id_category
-       # self.id_recipe = id_recipe
+        self.id_recipe = id_recipe
 
     def serialize(self):
         return{
             "id":self.id,
             "id_category":self.id_category,
-            #"id_recipe":self.id_recipe
+            "id_recipe":self.id_recipe
         }
+
+class Recipe(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250),nullable=False)
+    image = db.Column(db.String(250),nullable=False)
+    ingredients = db.Column(db.String(250),nullable=False)
+    elaboration = db.Column(db.String(250),nullable=False)
+    num_comment = db.Column(db.Integer)
+    date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
+    user = relationship("User")
+
+    def __init__(self, title, image, ingredients, elaboration,num_comment,user_id):
+        self.title = title
+        self.image = image
+        self.ingredients = ingredients
+        self.elaboration = elaboration
+        self.num_comment = num_comment
+        self.user_id = user_id
+
+    def __str__(self):  # sustituye a def __repr__ es la forma mas actualizada de python        
+       return '{} <{}>' .format(self.title, self.image)
+        
+    def serialize(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "image":self.image,
+            "ingredients":self.ingredients,
+            "elaboration":self.elaboration,
+            "num_comment":self.num_comment,
+            "date_recipe":self.date_recipe,
+            "user_id":self.user_id,
+            "user_name":self.user.user_name
+        }
+
        
 
       
