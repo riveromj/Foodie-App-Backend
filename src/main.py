@@ -10,9 +10,11 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
 from encrypted import encrypted_pass, compare_pass
-
 from jwt_auth import encode_token, decode_token
 import jwt
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict
+from random import randrange
 #from models import Person
 
 app = Flask(__name__)
@@ -25,8 +27,10 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
-#decorador
+#host para armar la url de la imagen de perfil del usuario
+HOST = "https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/" 
 
+#decorador
 def token_required(f):
     @wraps(f)
     def decorador(*args , **kwargs ):
@@ -61,6 +65,10 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+@app.route('/<filename>', methods=['GET'])
+def send_image(filename):
+    return send_file('./img/'+filename)    
+
 @app.route('/user/register', methods=['POST'])
 def register_user():
     try:
@@ -70,10 +78,20 @@ def register_user():
         if(body['password'] == '' or body['password'] is None ):
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
-                return jsonify({ "msg":"user_name is not send"}), 400  
-
+                return jsonify({ "msg":"user_name is not send"}), 400 
+        new_file = request.files['image']
+        file_name = secure_filename(new_file.filename)
+        #validar la extension de la foto .jpg o .png
+        exten = file_name.rsplit('.')
+        if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
+            #validacion si el nombre de la imagen ya existe en db
+            if os.path.exists('./src/img/' + file_name):
+                num = str(randrange(100))+'.'
+                file_name = file_name.replace('.', num)
+            new_file.save(os.path.join('./src/img/', file_name))
+            urlImg = HOST + file_name                   
         new_pass = encrypted_pass(body['password'])
-        new_user = User(body['user_name'], body['email'], new_pass)
+        new_user = User(body['user_name'], body['email'], new_pass, urlImg)
         db.session.add(new_user)
         db.session.commit()
         response_body = {
@@ -140,6 +158,10 @@ def update_user(id):
             "msg": user.serialize()
         }
     return jsonify(response_body), 201
+
+
+
+
     
     
 
