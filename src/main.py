@@ -15,7 +15,8 @@ import jwt
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 from random import randrange
-#from models import Person
+from datetime import datetime
+
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -45,11 +46,11 @@ def token_required(f):
                 return jsonify("no authorization"), 401
 
         except OSError as err:
-            print(err)
+            
             return jsonify("no authorization"), 401
 
         except jwt.exceptions.ExpiredSignatureError as err:
-            print(err)
+            
             return jsonify("expired token"), 403
 
         return f(*args , **kwargs)
@@ -116,10 +117,7 @@ def login_user():
 @app.route('/user/<int:id>', methods=['GET'])
 def get_one_member(id):
     try:
-        user = db.session.query(User).filter_by(id=id).first()
-        print(user.user_name)
-        print(user.id, "****************")  
-       # if user:
+        user = db.session.query(User).filter_by(id=id).first()      
         return jsonify(user.serialize()), 200
     except OSError as error:
         return jsonify("error"), 400
@@ -129,36 +127,23 @@ def get_one_member(id):
 
 @app.route('/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
-    print(id)
     user = User.query.get(id)
     db.session.delete(user)
     db.session.commit()
-    print(user)
     return jsonify('user borrado'), 200 
 
 @app.route('/user/<int:id>', methods=['PUT'])
 def update_user(id):
     body = dict(request.form)
-    print(body) 
     user = db.session.query(User).filter_by(id=id).first()
-    user.user_name = body['user_name']
-    #user.urlImg = body['urlImg']
-
-    #>>>>>Abajo prueba codigo Mari del PUT recipe  
-    new_file = request.files['urlImg']
-    file_name = secure_filename(new_file.filename)
-        #validar la extension de la foto .jpg o .png
-    exten = file_name.rsplit('.')
-    if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
-        #validacion si el nombre de la imagen ya existe en db
-        if os.path.exists('./src/img/' + file_name):
-            num = str(randrange(100))+'.'
-            file_name = file_name.replace('.', num)
-        new_file.save(os.path.join('./src/img/', file_name))
-        url = HOST + file_name
-    #>>>>>>>>>>>>>>Hasta aquí código Mari del PUT recipe        
+    user.user_name = body['user_name']  
+    user_image = request.files['urlImg']
+    filename = secure_filename(user_image.filename)
+    user_image.save(os.path.join('./src/img', filename))
+    now = datetime.now()   
+    url_Img = HOST + str(now) + '/' + filename 
+    user.urlImg = url_Img    
     db.session.commit()
-    print(user, body)
     response_body = {
             "msg": user.serialize()
         }
