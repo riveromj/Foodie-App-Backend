@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -245,13 +245,13 @@ def update_recipe(id):
             return jsonify('receta no encontrada'),404
         #Validaciones del formulario
          #validar los inputs de la receta imagen, title, ingredients y elaboration
-        if request.form.get('title')=='':
+        if request.form.get('title')=='' or body['title'] == None:
             return jsonify("Title cannot be empty"),400
-        if request.form.get('ingredients')=='' :
+        if request.form.get('ingredients')=='' or body['ingredients'] == None :
             return jsonify("Ingredients cannot be empty"),400
-        if request.form.get('elaboration')=='' :
+        if request.form.get('elaboration')=='' or body['elaboration'] == None:
             return jsonify("Elaboration cannot be empty"),400
-        if request.files['image']=='':
+        if request.files['image']=='' or body['image'] == None:
             return jsonify("Image cannot be empty"),400
         new_file = request.files['image']
         file_name = secure_filename(new_file.filename)
