@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, send_file
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -15,8 +15,8 @@ import jwt
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 from random import randrange
+from datetime import datetime
 from os.path import join, dirname, realpath
-
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -29,7 +29,6 @@ setup_admin(app)
 #host para armar la url de la imagen
 HOST = "https://3000-ed542743-ef07-4d5c-a241-d1227819290b.ws-eu03.gitpod.io/" 
 #decorador
-
 def token_required(f):
     @wraps(f)
     def decorador(*args , **kwargs ):
@@ -44,11 +43,11 @@ def token_required(f):
                 return jsonify("no authorization"), 401
 
         except OSError as err:
-            print(err)
+            
             return jsonify("no authorization"), 401
 
         except jwt.exceptions.ExpiredSignatureError as err:
-            print(err)
+            
             return jsonify("expired token"), 403
 
         return f(*args , **kwargs)
@@ -64,6 +63,10 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+@app.route('/<filename>', methods=['GET'])
+def send_image(filename):
+    return send_file('./img/'+filename)    
+
 @app.route('/user/register', methods=['POST'])
 def register_user():
     try:
@@ -73,8 +76,7 @@ def register_user():
         if(body['password'] == '' or body['password'] is None ):
                 return jsonify({ "msg":"Password is not send"}), 400
         if(body['user_name'] == '' or body['user_name'] is None ):
-                return jsonify({ "msg":"user_name is not send"}), 400  
-
+                return jsonify({ "msg":"user_name is not send"}), 400
         new_pass = encrypted_pass(body['password'])
         new_user = User(body['user_name'], body['email'], new_pass)
         db.session.add(new_user)
@@ -83,7 +85,7 @@ def register_user():
             "msg": new_user.serialize()
          }
         return jsonify(response_body), 201
-
+    
     except OSError as error:
         return jsonify("error"), 400
 
@@ -112,10 +114,7 @@ def login_user():
 @app.route('/user/<int:id>', methods=['GET'])
 def get_one_member(id):
     try:
-        user = db.session.query(User).filter_by(id=id).first()
-        print(user.user_name)
-        print(user.id, "****************")  
-       # if user:
+        user = db.session.query(User).filter_by(id=id).first()      
         return jsonify(user.serialize()), 200
     except OSError as error:
         return jsonify("error"), 400
@@ -125,24 +124,31 @@ def get_one_member(id):
 
 @app.route('/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
-    print(id)
     user = User.query.get(id)
     db.session.delete(user)
     db.session.commit()
-    print(user)
     return jsonify('user borrado'), 200 
 
 @app.route('/user/<int:id>', methods=['PUT'])
 def update_user(id):
-    body = request.get_json()  
+    body = dict(request.form)
     user = db.session.query(User).filter_by(id=id).first()
-    user.user_name = body['user_name']
+    user.user_name = body['user_name']  
+    user_image = request.files['urlImg']
+    filename = secure_filename(user_image.filename)
+    user_image.save(os.path.join('./src/img', filename))
+    now = datetime.now()   
+    url_Img = HOST + str(now) + '/' + filename 
+    user.urlImg = url_Img    
     db.session.commit()
-    print(user, body)
     response_body = {
             "msg": user.serialize()
         }
     return jsonify(response_body), 201
+
+
+
+
     
     
 ##### METHODS RECIPE #######
