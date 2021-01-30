@@ -1,33 +1,13 @@
-import os
-from flask import Flask, request, jsonify, url_for, send_file
-from flask_migrate import Migrate
-from flask_swagger import swagger
-from flask_cors import CORS
-from utils import APIException, generate_sitemap
-from admin import setup_admin
-from models import db, User, Recipe, Recipe_Category, Category, Comments
-from encrypted import encrypted_pass, compare_pass
+from flask import Flask, request, jsonify
+from models import db, User
 from jwt_auth import encode_token, decode_token
 import jwt
+from encrypted import encrypted_pass, compare_pass
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
-from random import randrange
+import os
 from datetime import datetime
-from os.path import join, dirname, realpath
-app = Flask(__name__)
-app.url_map.strict_slashes = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'thisisasuperkey'
-MIGRATE = Migrate(app, db)
-db.init_app(app)
-CORS(app)
-setup_admin(app)
-#host para armar la url de la imagen
-HOST = "https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/" 
-
 #USER END POINTS >>>>>>>>>>>>>>>>>>
-
 
 def user_route(app, token_required):
     @app.route('/user/register', methods=['POST'])
@@ -101,7 +81,7 @@ def user_route(app, token_required):
         filename = secure_filename(user_image.filename)
         user_image.save(os.path.join('./src/img', filename))
         now = datetime.now()   
-        url_Img = HOST + str(now) + '/' + filename 
+        url_Img = app.config['HOST'] + str(now) + '/' + filename 
         user.urlImg = url_Img    
         db.session.commit()
         response_body = {
