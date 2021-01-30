@@ -146,17 +146,6 @@ def update_user(id):
         }
     return jsonify(response_body), 201
 
-
-
-
-    
-    
-##### METHODS RECIPE #######
-#para mostrar la imagen de la receta
-@app.route('/<filename>', methods=['GET'])
-def send_image(filename):
-    return send_file('./img/'+filename)
-
 #Crear nueva receta
 @app.route('/user/<int:id>/recipe',methods=['POST'])
 def create_recipe(id):
