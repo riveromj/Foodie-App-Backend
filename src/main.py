@@ -27,7 +27,7 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 #host para armar la url de la imagen
-HOST = "https://3000-ed542743-ef07-4d5c-a241-d1227819290b.ws-eu03.gitpod.io/" 
+HOST = "https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/" 
 #decorador
 def token_required(f):
     @wraps(f)
