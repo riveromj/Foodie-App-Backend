@@ -40,9 +40,10 @@ class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text  = db.Column(db.String(250),nullable=False)
     date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    user_id = db.Column(db.Integer)
-    recipe_id = db.Column(db.Integer)
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=True)
+    recipe = relationship("Recipe")
+    user = relationship("User")
     #def __repr__(self):
         #return '<User %r>' % self.username
 
