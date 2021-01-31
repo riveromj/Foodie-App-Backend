@@ -1,10 +1,9 @@
 import os
-from datetime import datetime
 from flask import Flask, request, jsonify
-from models import db, User, Recipe
+from models import db, User, Recipe, Comments
 
 def comments_route(app, token_required):
-    @app.route('/comments', method=['GET'])
+    @app.route('/comments', methods=['GET'])
     def get_all_comments():
         all_comments=db.session.query(Comments).all()
         comment_list=[]
@@ -12,7 +11,7 @@ def comments_route(app, token_required):
             comment_list.append(comment.serialize())
         return jsonify(comment_list), 200
 
-    @app.route('/comments', method=['POST'])
+    @app.route('/comments', methods=['POST'])
     def create_comment():
         body=request.get_json()
         new_comment=Comments(body['text'], body['date_comment'], body['user_id'], body['recipe_id'])
@@ -20,7 +19,7 @@ def comments_route(app, token_required):
         db.session.commit()
         return jsonify('comentario creado'),200
 
-    @app.route('/comments/<int:id>', method=['DELETE'])
+    @app.route('/comments/<int:id>', methods=['DELETE'])
     def delete_comment(id):
         body=request.get_json()
         comment=Comments.query.filter_by(id=id)
