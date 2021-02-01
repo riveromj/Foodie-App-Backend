@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 
-
+#COMMENTS END POINTS >>>>>>>>>>>>>>>>>>
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
