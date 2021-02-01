@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 
-
+#COMMENTS END POINTS >>>>>>>>>>>>>>>>>>
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -13,11 +13,11 @@ class User(db.Model):
     urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/default_user_profile.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False)
 
-    def __init__(self, user_name, email, password):
-        self.user_name = user_name
-        self.email = email
-        self.password = password
-        self.is_active = True
+    # def __init__(self, user_name, email, password):
+    #     self.user_name = user_name
+    #     self.email = email
+    #     self.password = password
+    #     self.is_active = True
 
     def __repr__(self): return '<User %r>' % self.id   
 
@@ -39,18 +39,20 @@ class User(db.Model):
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text  = db.Column(db.String(250),nullable=False)
-    date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    user_id = db.Column(db.Integer)
-    recipe_id = db.Column(db.Integer)
-
-    #def __repr__(self):
-        #return '<User %r>' % self.username
+    date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe = relationship("Recipe")
+    user = relationship("User")
+    
+    def __repr__(self):
+        return '<Comments %r>' % self.text
 
     def serialize(self):
         return {
             "id": self.id,
             "text": self.text,
-            "date_comment": self.date,
+            "date_comment": self.date_comment,
             "user_id": self.user_id,
             "recipe_id": self.recipe_id
         }
@@ -73,9 +75,9 @@ class Recipe_Category(db.Model):
     category = relationship("Category")
     recipe = relationship("Recipe")
 
-    def __init__(self, id_category,id_recipe):
-        self.id_category = id_category
-        self.id_recipe = id_recipe
+    # def __init__(self, id_category,id_recipe):
+    #     self.id_category = id_category
+    #     self.id_recipe = id_recipe
 
     def serialize(self):
         return{
@@ -95,13 +97,13 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     user = relationship("User")
 
-    def __init__(self, title, image, ingredients, elaboration,num_comment,user_id):
-        self.title = title
-        self.image = image
-        self.ingredients = ingredients
-        self.elaboration = elaboration
-        self.num_comment = num_comment
-        self.user_id = user_id
+    # def __init__(self, title, image, ingredients, elaboration,num_comment,user_id):
+    #     self.title = title
+    #     self.image = image
+    #     self.ingredients = ingredients
+    #     self.elaboration = elaboration
+    #     self.num_comment = num_comment
+    #     self.user_id = user_id
 
     def __str__(self):  # sustituye a def __repr__ es la forma mas actualizada de python        
        return '{} <{}>' .format(self.title, self.image)
