@@ -37,7 +37,7 @@ def recipe_route(app, token_required):
                     file_name = file_name.replace('.', num)
                 new_file.save(os.path.join('./src/img/', file_name))
                 url = app.config['HOST'] + file_name
-                new_recipe=Recipe(body['title'],url,body['ingredients'],body['elaboration'],body['num_comment'],id)
+                new_recipe=Recipe(title = body['title'], image = url,ingredients = body['ingredients'], elaboration = body['elaboration'], num_comment = body['num_comment'], user_id = id)
                 db.session.add(new_recipe)
                 db.session.commit()
                 return jsonify(new_recipe.serialize()),200

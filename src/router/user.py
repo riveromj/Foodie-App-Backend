@@ -21,7 +21,7 @@ def user_route(app, token_required):
             if(body['user_name'] == '' or body['user_name'] is None ):
                     return jsonify({ "msg":"user_name is not send"}), 400
             new_pass = encrypted_pass(body['password'])
-            new_user = User(body['user_name'], body['email'], new_pass)
+            new_user = User(user_name = body['user_name'], email = body['email'], password = new_pass)
             db.session.add(new_user)
             db.session.commit()
             response_body = {
