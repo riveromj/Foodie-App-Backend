@@ -23,7 +23,7 @@ def comments_route(app, token_required):
 
     @app.route('/comments/<int:id>', methods=['DELETE'])
     def delete_comment(id):
-        body=request.get_json()
+        #body=request.get_json()
         comment=Comments.query.filter_by(id=id)
         comment.delete()
         db.session.commit()
