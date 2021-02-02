@@ -24,10 +24,8 @@ def user_route(app, token_required):
             new_user = User(user_name = body['user_name'], email = body['email'], password = new_pass)
             db.session.add(new_user)
             db.session.commit()
-            response_body = {
-                "msg": new_user.serialize()
-            }
-            return jsonify(response_body), 201
+            token=encode_token(new_user.serialize(), app.config['SECRET_KEY'])
+            return jsonify({"access_token":token}), 201
         
         except OSError as error:
             return jsonify("error"), 400
