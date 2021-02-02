@@ -76,12 +76,9 @@ def user_route(app, token_required):
     @app.route('/user/<int:id>', methods=['PUT'])
     def update_user(id):
         body = dict(request.form)
-        print(body,"-----------------")
         user = db.session.query(User).filter_by(id=id).first()
-        print(user)
         for key in body:
             setattr(user, key, body[key])
-        
         user_image = request.files['urlImg']
         url_Img = validate_file_format(app, user_image)
         if url_Img is None: 
