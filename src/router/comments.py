@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, url_for
 from models import db, User, Recipe, Comments
 
 def comments_route(app, token_required):
+    #TODO: recibir id de receta
     @app.route('/comments', methods=['GET'])
     def get_all_comments():
         all_comments=db.session.query(Comments).all()

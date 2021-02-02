@@ -72,6 +72,8 @@ def user_route(app, token_required):
         db.session.commit()
         return jsonify('user borrado'), 200 
 
+
+    #TODO: validar si el usuario esta enviando un file image
     @app.route('/user/<int:id>', methods=['PUT'])
     def update_user(id):
         body = dict(request.form)

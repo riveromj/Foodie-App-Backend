@@ -9,6 +9,8 @@ import os
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
 def recipe_route(app, token_required):
+
+    #TODO: dejar el path como recipe y recibir el user por el token
     @app.route('/user/<int:id>/recipe',methods=['POST'])
     def create_recipe(id):
         try:
