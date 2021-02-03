@@ -71,7 +71,7 @@ def recipe_route(app, token_required):
     @app.route('/recipes',methods=['GET'])
     def all_recipes():
         try:
-            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).all()
+            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).limit(9)
             print(todo_recipes)
             new_list=[]
             for recipe in todo_recipes:
