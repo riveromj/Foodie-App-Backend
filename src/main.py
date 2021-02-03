@@ -12,6 +12,9 @@ from models import db, User, Recipe, Recipe_Category, Category, Comments
 from router.user import user_route
 from router.recipe import recipe_route
 from router.comments import comments_route
+from functools import wraps
+from jwt_auth import encode_token, decode_token
+import jwt
 #-----------
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -37,7 +40,7 @@ def token_required(f):
             user = User.query.get(data['user']['id'])
             if user is None:
                 return jsonify("no authorization"), 401
-
+            return f(data,*args , **kwargs)
         except OSError as err:
             
             return jsonify("no authorization"), 401

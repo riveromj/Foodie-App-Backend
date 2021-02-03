@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 from os.path import join, dirname, realpath
 import os
+from jwt_auth import encode_token, decode_token
+import jwt
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
 def recipe_route(app, token_required):
@@ -17,6 +19,7 @@ def recipe_route(app, token_required):
             if not user_select:
                 return jsonify("User not found"),404
             body = dict(request.form)
+            print(body)
                 #validar los inputs de la receta title ingredients y elaboration
             if request.form.get('title')=='':
                 return jsonify("Title cannot be empty"),400
@@ -24,7 +27,7 @@ def recipe_route(app, token_required):
                 return jsonify("Ingredients cannot be empty"),400
             if request.form.get('elaboration')=='' :
                 return jsonify("Elaboration cannot be empty"),400
-            if request.files['image']=='':
+            if request.files['image']=='' or not request.files['image']:
                 return jsonify("Image cannot be empty"),400
             new_file = request.files['image']
             file_name = secure_filename(new_file.filename)
@@ -50,10 +53,11 @@ def recipe_route(app, token_required):
             return jsonify("error_key" + str(error_key)), 400
 
     #Consultar las recetar por usuario
-    @app.route('/recipe/<int:id>',methods=['GET'])
-    def user_recipes(id):
+    @app.route('/recipe',methods=['GET'])
+    @token_required
+    def user_recipes(user):
         try:
-            todo_recipes= db.session.query(Recipe).filter_by(user_id=id).all()
+            todo_recipes= db.session.query(Recipe).filter_by(user_id=user['user']['id']).all()
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
@@ -64,10 +68,10 @@ def recipe_route(app, token_required):
         except KeyError as error_key:
             return jsonify("error_key"),400
     #Consulta de todas las recetas para Home 
-    @app.route('/recipe',methods=['GET'])
+    @app.route('/recipes',methods=['GET'])
     def all_recipes():
         try:
-            todo_recipes= db.session.query(Recipe).all()
+            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).all()
             print(todo_recipes)
             new_list=[]
             for recipe in todo_recipes:
