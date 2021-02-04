@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 import os
 from datetime import datetime
+from validate_file_format import validate_file_format
 #USER END POINTS >>>>>>>>>>>>>>>>>>
 
 def user_route(app, token_required):
@@ -78,12 +79,12 @@ def user_route(app, token_required):
     def update_user(id):
         body = dict(request.form)
         user = db.session.query(User).filter_by(id=id).first()
-        user.user_name = body['user_name']  
+        for key in body:
+            setattr(user, key, body[key])
         user_image = request.files['urlImg']
-        filename = secure_filename(user_image.filename)
-        user_image.save(os.path.join('./src/img', filename))
-        now = datetime.now()   
-        url_Img = app.config['HOST'] + str(now) + '/' + filename 
+        url_Img = validate_file_format(app, user_image)
+        if url_Img is None: 
+            return jsonify("Image format invalid"), 400
         user.urlImg = url_Img    
         db.session.commit()
         response_body = {
