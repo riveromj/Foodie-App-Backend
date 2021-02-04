@@ -40,6 +40,7 @@ class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text  = db.Column(db.String(250),nullable=False)
     date_comment = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
     recipe = relationship("Recipe")
@@ -53,6 +54,7 @@ class Comments(db.Model):
             "id": self.id,
             "text": self.text,
             "date_comment": self.date_comment,
+            "is_active": self.is_active,
             "user_id": self.user_id,
             "recipe_id": self.recipe_id
         }
