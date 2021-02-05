@@ -33,7 +33,6 @@ def token_required(f):
     def decorador(*args , **kwargs ):
         try:
             auth = request.headers.get('Authorization')
-            print(auth,"-------------------")
             if auth is None:
                 return jsonify("no token"), 403
             token = auth.split(' ')

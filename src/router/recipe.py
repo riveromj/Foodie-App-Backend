@@ -20,7 +20,6 @@ def recipe_route(app, token_required):
             if not user_select:
                 return jsonify("User not found"),404
             body = dict(request.form)
-            print(body)
                 #validar los inputs de la receta title ingredients y elaboration
             if request.form.get('title')=='':
                 return jsonify("Title cannot be empty"),400
