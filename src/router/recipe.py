@@ -12,10 +12,6 @@ import jwt
 
 
 def recipe_route(app, token_required):
-   # @app.route('/<filename>', methods=['GET'])
-    #def send_image(filename):
-       # return send_file('./img/'+filename)
-
     @app.route('/user/<int:id>/recipe',methods=['POST'])
     def create_recipe(id):
         try:
@@ -61,7 +57,6 @@ def recipe_route(app, token_required):
     @app.route('/user/recipes',methods=['GET'])
     @token_required
     def user_recipes(user):
-        print(user,"++++++++++++++++")
         try:
             todo_recipes= db.session.query(Recipe).filter_by(user_id=user['user']['id']).all()
             new_list=[]
@@ -77,11 +72,9 @@ def recipe_route(app, token_required):
     def all_recipes(page):
         try:
             todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).paginate(page, 3, False).items
-          
             new_list=[]
             for recipe in todo_recipes:
-                new_list.append(recipe.serialize())
-               
+                new_list.append(recipe.serialize())  
             return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
