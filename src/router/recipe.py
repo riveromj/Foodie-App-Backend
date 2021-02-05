@@ -10,7 +10,12 @@ from jwt_auth import encode_token, decode_token
 import jwt
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
+
 def recipe_route(app, token_required):
+   # @app.route('/<filename>', methods=['GET'])
+    #def send_image(filename):
+       # return send_file('./img/'+filename)
+
     @app.route('/user/<int:id>/recipe',methods=['POST'])
     def create_recipe(id):
         try:
@@ -53,30 +58,30 @@ def recipe_route(app, token_required):
             return jsonify("error_key" + str(error_key)), 400
 
     #Consultar las recetar por usuario
-    @app.route('/recipe',methods=['GET'])
+    @app.route('/user/recipes',methods=['GET'])
     @token_required
     def user_recipes(user):
+        print(user,"++++++++++++++++")
         try:
             todo_recipes= db.session.query(Recipe).filter_by(user_id=user['user']['id']).all()
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
-                print(new_list)
             return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
         except KeyError as error_key:
             return jsonify("error_key"),400
     #Consulta de todas las recetas para Home 
-    @app.route('/recipes',methods=['GET'])
-    def all_recipes():
+    @app.route('/recipes/page/<int:page>',methods=['GET'])
+    def all_recipes(page):
         try:
-            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).limit(9)
-            print(todo_recipes)
+            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).paginate(page, 3, False).items
+          
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
-                print(new_list)
+               
             return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
