@@ -83,19 +83,17 @@ def recipe_route(app, token_required):
             return jsonify("error_key"),400
 
     #Eliminar Receta con el id de la receta
-    @app.route('/delete/recipe/<int:id>',methods=['DELETE'])
+    @app.route('/delete/recipe/<int:id>',methods=['PUT'])
     @token_required
     def delete_recipe(user,id):
         try:
-            recipe= Recipe.query.filter_by(id=id, user_id = user['user']['id'])
+            recipe=Recipe.query.filter_by(id=id, user_id = user['user']['id']).first()
             query_url= Recipe.query.filter_by(id=id).first() 
             url_photo = query_url.image.rsplit('/')
-            #recipe.delete()
-            if recipe.is_active == True : 
+            if recipe.is_active== True: 
                 recipe.is_active = False
-            print(recipe,"--------------------")
-            db.session.commit()
-            #os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
-            return jsonify('receta eliminada'),200
+                db.session.commit()
+                #os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
+                return jsonify('Receta eliminada'),200
         except OSError as error:
             return jsonify("error" + str(error)), 400

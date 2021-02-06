@@ -95,6 +95,7 @@ class Recipe(db.Model):
     ingredients = db.Column(db.String(250),nullable=False)
     elaboration = db.Column(db.String(250),nullable=False)
     num_comment = db.Column(db.Integer)
+    is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     user = relationship("User")
@@ -112,7 +113,8 @@ class Recipe(db.Model):
             "num_comment":self.num_comment,
             "date_recipe":self.date_recipe,
             "user_id":self.user_id,
-            "user_name":self.user.user_name
+            "user_name":self.user.user_name,
+            "is_active": self.is_active
         }
 
        
