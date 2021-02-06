@@ -13,6 +13,7 @@ class User(db.Model):
     urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/default_user_profile.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
 
+
     # def __init__(self, user_name, email, password):
     #     self.user_name = user_name
     #     self.email = email

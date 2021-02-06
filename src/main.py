@@ -12,15 +12,21 @@ from models import db, User, Recipe, Recipe_Category, Category, Comments, Favori
 from router.user import user_route
 from router.recipe import recipe_route
 from router.comments import comments_route
+<<<<<<< HEAD
 from router.favorites import favorites_route
 
+=======
+from functools import wraps
+from jwt_auth import encode_token, decode_token
+import jwt
+>>>>>>> develop
 #-----------
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'thisisasuperkey'
-app.config['HOST'] = "https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/" 
+app.config['HOST'] = "https://3000-jade-bobolink-7zloswnb.ws-eu03.gitpod.io/" 
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
@@ -41,7 +47,7 @@ def token_required(f):
             user = User.query.get(data['user']['id'])
             if user is None:
                 return jsonify("no authorization"), 401
-
+            return f(data,*args , **kwargs)
         except OSError as err:
             
             return jsonify("no authorization"), 401
