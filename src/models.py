@@ -58,6 +58,26 @@ class Comments(db.Model):
             "user_id": self.user_id,
             "recipe_id": self.recipe_id
         }
+
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe = relationship("Recipe")
+    user = relationship("User")
+
+    def __repr__(self):
+        return '<Favorites %r>' % self.text
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "is_active": self.is_active,
+            "user_id": self.user_id,
+            "recipe_id": self.recipe_id
+        }
+
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name_category = db.Column(db.String(250),unique= True,nullable=False)
