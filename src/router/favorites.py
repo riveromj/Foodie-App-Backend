@@ -6,8 +6,8 @@ def favorites_route(app, token_required):
     #TODO: recibir id de receta
     @app.route('/favorites', methods=['GET'])
     @token_required
-    def get_all_favorites():
-        all_favorites=Comments.query.filter_by(is_active=True)
+    def get_all_favorites(user):
+        all_favorites=Favorites.query.filter_by(is_active=True, user_id = user['user']['id']).all()
         favorite_list=[]
         for favorite in all_favorites:
             favorite_list.append(favorite.serialize())
@@ -26,8 +26,8 @@ def favorites_route(app, token_required):
 
     @app.route('/favorites/<int:id>', methods=['PUT'])
     @token_required
-    def delete_favorite(user):
-        favorite=Favorites.query.filter_by(id = id).first()
+    def delete_favorite(user, id):
+        favorite=Favorites.query.filter_by(id = id, user_id = user['user']['id'] ).first()
         if favorite.is_active == True : 
             favorite.is_active = False
             db.session.commit()

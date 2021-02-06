@@ -12,14 +12,11 @@ from models import db, User, Recipe, Recipe_Category, Category, Comments, Favori
 from router.user import user_route
 from router.recipe import recipe_route
 from router.comments import comments_route
-<<<<<<< HEAD
 from router.favorites import favorites_route
 
-=======
 from functools import wraps
 from jwt_auth import encode_token, decode_token
 import jwt
->>>>>>> develop
 #-----------
 app = Flask(__name__)
 app.url_map.strict_slashes = False
