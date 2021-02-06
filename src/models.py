@@ -68,7 +68,7 @@ class Favorites(db.Model):
     user = relationship("User")
 
     def __repr__(self):
-        return '<Favorites %r>' % self.text
+        return '<Favorites %r>' % self.id
     
     def serialize(self):
         return {
