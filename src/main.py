@@ -27,6 +27,8 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+#TODO: mover return de 51 a 42 y pasar data en los parametros
+
 #decorador
 def token_required(f):
     @wraps(f)

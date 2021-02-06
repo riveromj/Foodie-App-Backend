@@ -3,9 +3,10 @@ from flask import Flask, request, jsonify, url_for
 from models import db, User, Recipe, Comments
 
 def comments_route(app, token_required):
+    #TODO: recibir id de receta
     @app.route('/comments', methods=['GET'])
     def get_all_comments():
-        all_comments=db.session.query(Comments).all()
+        all_comments=Comments.query.filter_by(is_active=True)
         comment_list=[]
         for comment in all_comments:
             comment_list.append(comment.serialize())
@@ -21,10 +22,11 @@ def comments_route(app, token_required):
         db.session.commit()
         return jsonify(new_comment.serialize()),201
 
-    @app.route('/comments/<int:id>', methods=['DELETE'])
+    @app.route('/comments/<int:id>', methods=['PUT'])
     def delete_comment(id):
-        comment=Comments.query.filter_by(id=id)
-        comment.delete()
-        db.session.commit()
-        return jsonify('comentario borrado'),200
-        
+        comment=Comments.query.filter_by(id=id).first()
+        if comment.is_active == True : 
+            comment.is_active = False
+            db.session.commit()
+            return jsonify('comentario borrado'),200
+        return jsonify('No se ha podido borrar el comentario'),406
