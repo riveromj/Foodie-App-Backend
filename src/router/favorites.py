@@ -14,11 +14,11 @@ def favorites_route(app, token_required):
         return jsonify(favorite_list), 200
 
     @app.route('/favorites', methods=['POST'])
-    def add_favorites():
-    @token_required
+    @token_required 
+    def add_favorites(user):
         body=request.get_json()
         print(body)
-        new_favorite=Favorites(user_id = body['user_id'], recipe_id = body['recipe_id'])
+        new_favorite=Favorites(user_id = user['user']['id'], recipe_id = body['recipe_id'])
         print(new_favorite)
         db.session.add(new_favorite)
         db.session.commit()
@@ -26,8 +26,8 @@ def favorites_route(app, token_required):
 
     @app.route('/favorites/<int:id>', methods=['PUT'])
     @token_required
-    def delete_favorite(id):
-        favorite=Favorites.query.filter_by(id=id).first()
+    def delete_favorite(user):
+        favorite=Favorites.query.filter_by(id = id).first()
         if favorite.is_active == True : 
             favorite.is_active = False
             db.session.commit()
