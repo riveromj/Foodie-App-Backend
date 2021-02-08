@@ -88,7 +88,6 @@ class Recipe_Category(db.Model):
             "id_category":self.id_category,
             "id_recipe":self.id_recipe
         }
-
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250),nullable=False)
@@ -96,21 +95,14 @@ class Recipe(db.Model):
     ingredients = db.Column(db.String(250),nullable=False)
     elaboration = db.Column(db.String(250),nullable=False)
     num_comment = db.Column(db.Integer)
+    is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     user = relationship("User")
 
-    # def __init__(self, title, image, ingredients, elaboration,num_comment,user_id):
-    #     self.title = title
-    #     self.image = image
-    #     self.ingredients = ingredients
-    #     self.elaboration = elaboration
-    #     self.num_comment = num_comment
-    #     self.user_id = user_id
-
-    def __str__(self):  # sustituye a def __repr__ es la forma mas actualizada de python        
-       return '{} <{}>' .format(self.title, self.image)
-        
+# sustituye a def __repr__ es la forma mas actualizada de python  
+    #def __str__(self):        
+      # return '{} <{}>' .format(self.title, self.image)   
     def serialize(self):
         return {
             "id": self.id,
@@ -121,7 +113,8 @@ class Recipe(db.Model):
             "num_comment":self.num_comment,
             "date_recipe":self.date_recipe,
             "user_id":self.user_id,
-            "user_name":self.user.user_name
+            "user_name":self.user.user_name,
+            "is_active": self.is_active
         }
 
        
