@@ -27,7 +27,7 @@ def comments_route(app, token_required):
     @app.route('/comments/<int:id>', methods=['PUT'])
     @token_required
     def delete_comment(id):
-        comment=Comments.query.filter_by(id=id).first()
+        comment=Comments.query.filter_by(id=id, user_id = user['user']['id'] ).first()
         if comment.is_active == True : 
             comment.is_active = False
             db.session.commit()
