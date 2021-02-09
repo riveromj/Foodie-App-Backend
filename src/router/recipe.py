@@ -59,7 +59,7 @@ def recipe_route(app, token_required):
     @token_required
     def user_recipes(user):
         try:
-            todo_recipes= db.session.query(Recipe).filter_by(Recipe.is_active==True,user_id=user['user']['id']).all()
+            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).filter(Recipe.is_active==True, Recipe.user_id==user['user']['id']).all()
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())

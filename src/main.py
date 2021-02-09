@@ -21,7 +21,7 @@ app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'thisisasuperkey'
-app.config['HOST'] = "https://3000-jade-bobolink-7zloswnb.ws-eu03.gitpod.io/" 
+app.config['HOST'] = "https://3000-scarlet-cat-vmp5tp7q.ws-eu03.gitpod.io/" 
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
