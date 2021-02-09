@@ -8,10 +8,12 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Recipe, Recipe_Category, Category, Comments
+from models import db, User, Recipe, Recipe_Category, Category, Comments, Favorites
 from router.user import user_route
 from router.recipe import recipe_route
 from router.comments import comments_route
+from router.favorites import favorites_route
+
 from functools import wraps
 from jwt_auth import encode_token, decode_token
 import jwt
@@ -72,6 +74,7 @@ def send_image(filename):
 user = user_route(app, token_required)
 recipe = recipe_route(app, token_required)
 comments = comments_route(app, token_required)
+favorites = favorites_route(app, token_required)
 
 
 #--------
