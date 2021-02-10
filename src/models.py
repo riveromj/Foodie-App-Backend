@@ -89,7 +89,7 @@ class Category(db.Model):
     def serialize(self):
         return{
             "id":self.id,
-            "name_categoy": self.name_category
+            "name_category": self.name_category
         }
 class Recipe_Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -114,12 +114,12 @@ class Recipe(db.Model):
     image = db.Column(db.String(250),nullable=False)
     ingredients = db.Column(db.String(250),nullable=False)
     elaboration = db.Column(db.String(250),nullable=False)
-    num_comment = db.Column(db.Integer)
+    #num_comment = db.Column(db.Integer)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     user = relationship("User")
-
+    
 # sustituye a def __repr__ es la forma mas actualizada de python  
     #def __str__(self):        
       # return '{} <{}>' .format(self.title, self.image)   
@@ -130,13 +130,17 @@ class Recipe(db.Model):
             "image":self.image,
             "ingredients":self.ingredients,
             "elaboration":self.elaboration,
-            "num_comment":self.num_comment,
+           
             "date_recipe":self.date_recipe,
             "user_id":self.user_id,
             "user_name":self.user.user_name,
             "is_active": self.is_active
         }
 
-       
+       # "num_comment":self.num_comment, de la línea 133
+
+      
+
+
 
       
