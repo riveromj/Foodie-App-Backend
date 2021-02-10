@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 from os.path import join, dirname, realpath
 import os
+from validate_file_format import validate_file_format;
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
 def recipe_route(app, token_required):
@@ -22,7 +23,7 @@ def recipe_route(app, token_required):
             # if not user_select:
             #     return jsonify("User not found"),404
             body = request.form.to_dict()
-            
+            print(body)
                 #validar los inputs de la receta title ingredients y elaboration
             if request.form.get('title')=='':
                 return jsonify("Title cannot be empty"),400
@@ -30,33 +31,20 @@ def recipe_route(app, token_required):
                 return jsonify("Ingredients cannot be empty"),400
             if request.form.get('elaboration')=='' :
                 return jsonify("Elaboration cannot be empty"),400
-            # if request.files['image']=='':
-            #     return jsonify("Image cannot be empty"),400
-            # new_file = request.files['image']
-            # file_name = secure_filename(new_file.filename)
-            # #validar la extension de la foto .jpg o .png
-            # exten = file_name.rsplit('.')
-            # if (exten[1].lower()=='jpg' or exten[1].lower()=='png'):
-            #     #validacion si el nombre de la imagen ya existe en db
-            #     if os.path.exists('./src/img/' + file_name):
-            #         num = str(randrange(100))+'.'
-            #         file_name = file_name.replace('.', num)
-            #     new_file.save(os.path.join('./src/img/', file_name))
-            #     url = app.config['HOST'] + file_name
-        #         new_recipe=Recipe(title = body['title'], image = url,ingredients = body['ingredients'], elaboration = body['elaboration'], num_comment = body['num_comment'], user_id = id)
-        #         db.session.add(new_recipe)
-        #         db.session.commit()
-        #         return jsonify(new_recipe.serialize()),200
-        #     else:
-        #         return jsonify('extencion de archivo no permitido'),400
-        #     return jsonify("todo bien"), 200
+            if request.files['image']=='':
+                return jsonify("Image cannot be empty"),400
+            new_file = request.files['image']
+            
+            url_image = validate_file_format(app, new_file= new_file)
 
-            new_recipe=Recipe(title = body['title'], image = body['image'],ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
+            new_recipe=Recipe(title = body['title'], image= url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
             db.session.add(new_recipe)
             db.session.commit()
             print(new_recipe.id)
             print(body["categories"])
-            #For 
+
+            #for category in body['categories']:
+            
             category = Category.query.filter_by(name_category = body['categories']).first()
             print(category)
 
