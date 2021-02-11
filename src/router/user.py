@@ -74,17 +74,19 @@ def user_route(app, token_required):
 
 
     #TODO: validar si el usuario esta enviando un file image
-    @app.route('/user/<int:id>', methods=['PUT'])
-    def update_user(id):
+    @app.route('/user', methods=['PUT'])
+    @token_required
+    def update_user(user):
         body = dict(request.form)
-        user = db.session.query(User).filter_by(id=id).first()
+        user = db.session.query(User).filter_by(id=user['user']['id']).first()
+        print(user)
         for key in body:
             setattr(user, key, body[key])
-        user_image = request.files['urlImg']
-        url_Img = validate_file_format(app, user_image)
-        if url_Img is None: 
-            return jsonify("Image format invalid"), 400
-        user.urlImg = url_Img    
+        # user_image = request.files['urlImg']
+        # url_Img = validate_file_format(app, user_image)
+        # if url_Img is None: 
+        #     return jsonify("Image format invalid"), 400
+        # user.urlImg = url_Img    
         db.session.commit()
         response_body = {
                 "msg": user.serialize()
