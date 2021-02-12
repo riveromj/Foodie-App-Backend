@@ -20,7 +20,9 @@ class User(db.Model):
     #     self.password = password
     #     self.is_active = True
 
-    def __repr__(self): return '<User %r>' % self.id   
+    #def __repr__(self): return '<User %r>' % self.id 
+    def __str__(self):        
+        return '{} <{}>' .format(self.email, self.user_name)   
 
     def serialize(self):
         return {
