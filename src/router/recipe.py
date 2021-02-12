@@ -23,7 +23,7 @@ def recipe_route(app, token_required):
             # if not user_select:
             #     return jsonify("User not found"),404
             body = request.form.to_dict()
-            print(body)
+            print(body, "body")
                 #validar los inputs de la receta title ingredients y elaboration
             if request.form.get('title')=='':
                 return jsonify("Title cannot be empty"),400
@@ -36,25 +36,28 @@ def recipe_route(app, token_required):
             new_file = request.files['image']
             
             url_image = validate_file_format(app, new_file= new_file)
-
+            print(url_image, "url image")
             new_recipe=Recipe(title = body['title'], image= url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
             db.session.add(new_recipe)
             db.session.commit()
-            print(new_recipe.id)
-            print(body["categories"])
+            # print(new_recipe.id, "newrecipeId")
+            # print(body["categories"], "new categories", type(body["categories"]))
+            allCategories = body['categories'].get_json()
 
-            #for category in body['categories']:
+            for category in allCategories:
+                
+                thisCategory = Category.query.filter_by(name_category = category).first()
+                print(category, "category")
+            if thisCategory:
+                new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = new_recipe.id)
+                db.session.add(new_recipe_category)
+                db.session.commit()
+                print(new_recipe_category)
             
-            category = Category.query.filter_by(name_category = body['categories']).first()
-            print(category)
-
-            new_recipe_category = Recipe_Category(id_category = category.id, id_recipe = new_recipe.id)
-            db.session.add(new_recipe_category)
-            db.session.commit()
-            print(new_recipe_category)
-
-            return jsonify(new_recipe.serialize()),200
+            
             print(new_recipe)
+            return jsonify(new_recipe.serialize()),200
+                
 
         except OSError as error:
             return jsonify("error" +str(error)), 400
