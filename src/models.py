@@ -12,6 +12,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique = False, nullable= False)
     urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/default_user_profile.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
+    comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
 
 
     # def __init__(self, user_name, email, password):
@@ -44,8 +45,8 @@ class Comments(db.Model):
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
-    recipe = relationship("Recipe")
-    user = relationship("User")
+    
+    
     
     def __repr__(self):
         return '<Comments %r>' % self.text
@@ -96,7 +97,7 @@ class Recipe_Category(db.Model):
     id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
     id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
     category = relationship("Category")
-    recipe = relationship("Recipe")
+    recipe = relationship("Recipe", cascade = "all,delete", backref = 'recipe_Category')
 
     # def __init__(self, id_category,id_recipe):
     #     self.id_category = id_category
@@ -114,11 +115,11 @@ class Recipe(db.Model):
     image = db.Column(db.String(250),nullable=False)
     ingredients = db.Column(db.String(250),nullable=False)
     elaboration = db.Column(db.String(250),nullable=False)
-    #num_comment = db.Column(db.Integer)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
-    user = relationship("User")
+    comments = db.relationship('Comments', cascade = "all,delete", backref = 'recipe', lazy = True)
+   
     
 # sustituye a def __repr__ es la forma mas actualizada de python  
     #def __str__(self):        
@@ -130,10 +131,9 @@ class Recipe(db.Model):
             "image":self.image,
             "ingredients":self.ingredients,
             "elaboration":self.elaboration,
-           
             "date_recipe":self.date_recipe,
             "user_id":self.user_id,
-            "user_name":self.user.user_name,
+            "comments": list(map(lambda comment: comment.serialize(), self.comments)),
             "is_active": self.is_active
         }
 

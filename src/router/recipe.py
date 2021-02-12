@@ -7,6 +7,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from os.path import join, dirname, realpath
 import os
 from validate_file_format import validate_file_format;
+import json;
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
 def recipe_route(app, token_required):
@@ -17,13 +18,7 @@ def recipe_route(app, token_required):
     def create_recipe(user):
         try:
             id = user['user']['id']
-            
-            #como validar que el usuario esta en db necesito TOKEN
-            # user_select = db.session.query(User).filter_by(id=id).first()
-            # if not user_select:
-            #     return jsonify("User not found"),404
             body = request.form.to_dict()
-            print(body, "body")
                 #validar los inputs de la receta title ingredients y elaboration
             if request.form.get('title')=='':
                 return jsonify("Title cannot be empty"),400
@@ -35,29 +30,30 @@ def recipe_route(app, token_required):
                 return jsonify("Image cannot be empty"),400
             new_file = request.files['image']
             
-            url_image = validate_file_format(app, new_file= new_file)
-            print(url_image, "url image")
-            new_recipe=Recipe(title = body['title'], image= url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
+            url_image = validate_file_format(app, new_file)
+            print(url_image, "///////////////////")
+
+            # allIngredients = json.loads(body["ingredients"])
+            new_recipe = Recipe(title = body['title'], image = url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
             db.session.add(new_recipe)
             db.session.commit()
-            # print(new_recipe.id, "newrecipeId")
-            # print(body["categories"], "new categories", type(body["categories"]))
-            allCategories = body['categories'].get_json()
+            print(new_recipe, new_recipe.serialize())
+            
+    #Buscamos cada categoría en la base de datos y la añadimos a recipe category
+            allCategories = json.loads(body["categories"])
 
             for category in allCategories:
                 
                 thisCategory = Category.query.filter_by(name_category = category).first()
                 print(category, "category")
-            if thisCategory:
-                new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = new_recipe.id)
-                db.session.add(new_recipe_category)
-                db.session.commit()
-                print(new_recipe_category)
-            
+                if thisCategory:
+                    new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = new_recipe.id)
+                    db.session.add(new_recipe_category)
+                    db.session.commit()
+                    print(new_recipe_category)
             
             print(new_recipe)
             return jsonify(new_recipe.serialize()),200
-                
 
         except OSError as error:
             return jsonify("error" +str(error)), 400
@@ -85,14 +81,16 @@ def recipe_route(app, token_required):
     #Consulta de todas las recetas para Home 
     @app.route('/recipe',methods=['GET'])
     def all_recipes():
+       
         try:
             todo_recipes= db.session.query(Recipe).all()
-            print(todo_recipes)
+            models = list(map(lambda x: x.serialize(), todo_recipes))
+            print(todo_recipes,"33333333333333333")
             new_list=[]
-            for recipe in todo_recipes:
-                new_list.append(recipe.serialize())
-                print(new_list)
-            return jsonify(new_list),200
+            for recipe in models:
+                recipe["ingredients"] = recipe["ingredients"][1:-1].replace('"',"").split(",")
+                new_list.append(recipe)
+                return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
         except KeyError as error_key:
