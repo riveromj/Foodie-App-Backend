@@ -37,10 +37,11 @@ def user_route(app, token_required):
     @app.route('/user/login', methods=['POST'])
     def login_user():
         try:    
-            body = request.get_json()    
+            body = request.get_json()
+            print(body)    
             user = User.query.filter_by(email=body['email']).first()   
             if(user is None):
-                return "user not exist", 401  
+                return "user not exist", 404  
             is_validate = compare_pass(body['password'], user.password_bcrypt())
             if(is_validate == False):
                 return "password incorrect", 401
