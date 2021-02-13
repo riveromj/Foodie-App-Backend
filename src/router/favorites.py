@@ -17,12 +17,14 @@ def favorites_route(app, token_required):
     @app.route('/favorites/<int:id>' , methods=['POST'])
     @token_required 
     def add_favorites(user, id):
-       #body=request.get_json()
+        print(request, "@@@@@@@@@@@@@@@@@@@@@@@@@")
+        body=request.get_json()
+        print(body, "@@@@@@@@@@@@@@@@@@@@@@@@@")
         favorite_exists = Favorites.query.filter_by(user_id = user['user']['id'], recipe_id = id).first()
         if favorite_exists is not None:
             return jsonify("favorite already exists"),409
         else:
-            new_favorite=Favorites(user_id = user['user']['id'], recipe_id = id)
+            new_favorite=Favorites(user_id = user['user']['id'], recipe_id = id, title = body['title'], image = body['image'])
             print(new_favorite, "adios@@@@@@@@@@2@@@@")
             db.session.add(new_favorite)
             db.session.commit()
