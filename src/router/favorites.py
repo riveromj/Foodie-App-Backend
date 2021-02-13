@@ -17,9 +17,7 @@ def favorites_route(app, token_required):
     @app.route('/favorites/<int:id>' , methods=['POST'])
     @token_required 
     def add_favorites(user, id):
-        print(request, "@@@@@@@@@@@@@@@@@@@@@@@@@")
         body=request.get_json()
-        print(body, "@@@@@@@@@@@@@@@@@@@@@@@@@")
         favorite_exists = Favorites.query.filter_by(user_id = user['user']['id'], recipe_id = id).first()
         if favorite_exists is not None: 
             if favorite_exists.is_active == False :
@@ -29,7 +27,6 @@ def favorites_route(app, token_required):
             return jsonify("favorite already exists"),409
         else:
             new_favorite=Favorites(user_id = user['user']['id'], recipe_id = id, title = body['title'], image = body['image'])
-            print(new_favorite, "adios@@@@@@@@@@2@@@@")
             db.session.add(new_favorite)
             db.session.commit()
             return jsonify(new_favorite.serialize()),201
@@ -38,7 +35,6 @@ def favorites_route(app, token_required):
     @token_required
     def delete_favorite(user, id):
         favorite=Favorites.query.filter_by(id = id, user_id = user['user']['id'] ).first()
-        print(user,id,favorite, "@@@@@@@@@@@@")
         if favorite is not None:
             if favorite.is_active == True : 
                 favorite.is_active = False
