@@ -14,7 +14,9 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
     comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
 
-    def __repr__(self): return '<User %r>' % self.id   
+    #def __repr__(self): return '<User %r>' % self.id 
+    def __str__(self):        
+        return '{} <{}>' .format(self.email, self.user_name)   
 
     def serialize(self):
         return {
