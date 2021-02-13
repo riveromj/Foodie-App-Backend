@@ -21,21 +21,18 @@ def user_route(app, token_required):
                     return jsonify({ "msg":"Password is not send"}), 400
             if(body['user_name'] == '' or body['user_name'] is None ):
                     return jsonify({ "msg":"user_name is not send"}), 400
-            user_check= db.session.query(User).filter(User.email==body['email']).first()
-            if  (user_check)is None:
+            email_check= db.session.query(User).filter(User.email==body['email']).first()
+            user_check= db.session.query(User).filter(User.user_name==body['user_name']).first()
+            if  email_check is None and user_check is None:
                 new_pass = encrypted_pass(body['password'])
                 new_user = User(user_name = body['user_name'], email = body['email'], password = new_pass)
                 db.session.add(new_user)
                 db.session.commit()
                 token=encode_token(new_user.serialize(), app.config['SECRET_KEY'])
+                print(token,"TOKEN")
                 return jsonify({"access_token":token}), 201
             else:
-                return jsonify("email already exists"), 409
-           
-                
-       
-                
-        
+                return jsonify("user or email already exists"), 409
         except OSError as error:
             return jsonify("error"), 400
 
