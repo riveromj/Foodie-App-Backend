@@ -21,7 +21,11 @@ def favorites_route(app, token_required):
         body=request.get_json()
         print(body, "@@@@@@@@@@@@@@@@@@@@@@@@@")
         favorite_exists = Favorites.query.filter_by(user_id = user['user']['id'], recipe_id = id).first()
-        if favorite_exists is not None:
+        if favorite_exists is not None: 
+            if favorite_exists.is_active == False :
+                favorite_exists.is_active = True
+                db.session.commit()
+                return jsonify(favorite_exists.serialize()),200
             return jsonify("favorite already exists"),409
         else:
             new_favorite=Favorites(user_id = user['user']['id'], recipe_id = id, title = body['title'], image = body['image'])
