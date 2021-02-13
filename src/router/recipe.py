@@ -59,6 +59,7 @@ def recipe_route(app, token_required):
     def user_recipes(id):
         try:
             todo_recipes= db.session.query(Recipe).filter_by(user_id=id).all()
+
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
@@ -70,7 +71,6 @@ def recipe_route(app, token_required):
     #Consulta de todas las recetas para Home 
     @app.route('/recipe',methods=['GET'])
     def all_recipes():
-       
         try:
             todo_recipes= db.session.query(Recipe).all()
             models = list(map(lambda x: x.serialize(), todo_recipes))

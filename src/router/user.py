@@ -53,10 +53,11 @@ def user_route(app, token_required):
         except KeyError as error:      
             return jsonify("error del KeyError" + str(error)), 400
 
-    @app.route('/user/<int:id>', methods=['GET'])
-    def get_one_member(id):
+    @app.route('/user', methods=['GET'])
+    @token_required
+    def get_one_member(user):
         try:
-            user = db.session.query(User).filter_by(id=id).first()      
+            user = db.session.query(User).filter(User.id== user['user']['id']).first()      
             return jsonify(user.serialize()), 200
         except OSError as error:
             return jsonify("error"), 400
