@@ -14,13 +14,6 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
     comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
 
-
-    # def __init__(self, user_name, email, password):
-    #     self.user_name = user_name
-    #     self.email = email
-    #     self.password = password
-    #     self.is_active = True
-
     def __repr__(self): return '<User %r>' % self.id   
 
     def serialize(self):
@@ -29,14 +22,10 @@ class User(db.Model):
             "user_name": self.user_name,
             "email": self.email,
             "urlImg": self.urlImg
-
-            # do not serialize the password, its a security breach
         }
 
     def password_bcrypt(self):
-        return self.password
-
-  
+        return self.password 
     
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -99,10 +88,6 @@ class Recipe_Category(db.Model):
     category = relationship("Category")
     recipe = relationship("Recipe", cascade = "all,delete", backref = 'recipe_Category')
 
-    # def __init__(self, id_category,id_recipe):
-    #     self.id_category = id_category
-    #     self.id_recipe = id_recipe
-
     def serialize(self):
         return{
             "id":self.id,
@@ -121,9 +106,6 @@ class Recipe(db.Model):
     comments = db.relationship('Comments', cascade = "all,delete", backref = 'recipe', lazy = True)
    
     
-# sustituye a def __repr__ es la forma mas actualizada de python  
-    #def __str__(self):        
-      # return '{} <{}>' .format(self.title, self.image)   
     def serialize(self):
         return {
             "id": self.id,
@@ -137,7 +119,6 @@ class Recipe(db.Model):
             "is_active": self.is_active
         }
 
-       # "num_comment":self.num_comment, de la línea 133
 
       
 

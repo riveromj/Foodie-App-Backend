@@ -28,16 +28,11 @@ def recipe_route(app, token_required):
                 return jsonify("Elaboration cannot be empty"),400
             if request.files['image']=='':
                 return jsonify("Image cannot be empty"),400
-            new_file = request.files['image']
-            
+            new_file = request.files['image']            
             url_image = validate_file_format(app, new_file)
-            print(url_image, "///////////////////")
-
-            # allIngredients = json.loads(body["ingredients"])
             new_recipe = Recipe(title = body['title'], image = url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
             db.session.add(new_recipe)
             db.session.commit()
-            print(new_recipe, new_recipe.serialize())
             
     #Buscamos cada categoría en la base de datos y la añadimos a recipe category
             allCategories = json.loads(body["categories"])
@@ -50,7 +45,6 @@ def recipe_route(app, token_required):
                     new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = new_recipe.id)
                     db.session.add(new_recipe_category)
                     db.session.commit()
-                    print(new_recipe_category)
             
             print(new_recipe)
             return jsonify(new_recipe.serialize()),200
@@ -60,10 +54,6 @@ def recipe_route(app, token_required):
         except KeyError as error_key:
             return jsonify("error_key" + str(error_key)), 400
 
-          
-            
-        
-
     #Consultar las recetar por usuario
     @app.route('/recipe/<int:id>',methods=['GET'])
     def user_recipes(id):
@@ -72,7 +62,6 @@ def recipe_route(app, token_required):
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
-                print(new_list)
             return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
@@ -85,7 +74,6 @@ def recipe_route(app, token_required):
         try:
             todo_recipes= db.session.query(Recipe).all()
             models = list(map(lambda x: x.serialize(), todo_recipes))
-            print(todo_recipes,"33333333333333333")
             new_list=[]
             for recipe in models:
                 recipe["ingredients"] = recipe["ingredients"][1:-1].replace('"',"").split(",")
