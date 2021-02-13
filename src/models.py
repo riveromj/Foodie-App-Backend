@@ -52,6 +52,8 @@ class Comments(db.Model):
 
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(250),nullable=False)
+    image = db.Column(db.String(250),nullable=False)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
@@ -64,6 +66,8 @@ class Favorites(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "title": self.title,
+            "image":self.image,            
             "is_active": self.is_active,
             "user_id": self.user_id,
             "recipe_id": self.recipe_id
