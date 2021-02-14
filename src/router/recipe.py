@@ -55,11 +55,11 @@ def recipe_route(app, token_required):
             return jsonify("error_key" + str(error_key)), 400
 
     #Consultar las recetar por usuario
-    @app.route('/recipe/<int:id>',methods=['GET'])
-    def user_recipes(id):
+    @app.route('/user/recipes',methods=['GET'])
+    @token_required
+    def user_recipes(user):
         try:
-            todo_recipes= db.session.query(Recipe).filter_by(user_id=id).all()
-
+            todo_recipes= db.session.query(Recipe).order_by(Recipe.date_recipe.desc()).filter(Recipe.is_active==True, Recipe.user_id==user['user']['id']).all()
             new_list=[]
             for recipe in todo_recipes:
                 new_list.append(recipe.serialize())
@@ -68,32 +68,40 @@ def recipe_route(app, token_required):
             return jsonify("error"),400
         except KeyError as error_key:
             return jsonify("error_key"),400
+
+
+
     #Consulta de todas las recetas para Home 
-    @app.route('/recipe',methods=['GET'])
-    def all_recipes():
+    @app.route('/recipes/page/<int:page>',methods=['GET'])
+    def all_recipes(page):
         try:
-            todo_recipes= db.session.query(Recipe).all()
+            todo_recipes= db.session.query(Recipe).filter(Recipe.is_active==True).order_by(Recipe.date_recipe.desc()).paginate(page, 3, False).items
             models = list(map(lambda x: x.serialize(), todo_recipes))
             new_list=[]
             for recipe in models:
                 recipe["ingredients"] = recipe["ingredients"][1:-1].replace('"',"").split(",")
                 new_list.append(recipe)
-                return jsonify(new_list),200
+            print(new_list,"======")    
+            return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
         except KeyError as error_key:
             return jsonify("error_key"),400
 
+
+
     #Eliminar Receta con el id de la receta
-    @app.route('/recipe/<int:id>',methods=['DELETE'])
-    def delete_recipe(id):
+    @app.route('/delete/recipe/<int:id>',methods=['PUT'])
+    @token_required
+    def delete_recipe(user,id):
         try:
-            recipe= Recipe.query.filter_by(id=id)
+            recipe=Recipe.query.filter_by(id=id, user_id = user['user']['id']).first()
             query_url= Recipe.query.filter_by(id=id).first() 
             url_photo = query_url.image.rsplit('/')
-            recipe.delete()
-            db.session.commit()
-            os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
-            return jsonify('receta eliminada'),200
+            if recipe.is_active== True: 
+                recipe.is_active = False
+                db.session.commit()
+                #os.remove('./src/img/'+url_photo[3]) # borrar la foto de la carpeta del servidor
+                return jsonify('Receta eliminada'),200
         except OSError as error:
             return jsonify("error" + str(error)), 400

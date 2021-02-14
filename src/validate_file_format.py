@@ -6,10 +6,11 @@ from datetime import datetime
 
 def validate_file_format(app, new_file):
     file_name = secure_filename(new_file.filename)
-    exten = file_name.rsplit('.')
+    exten = file_name.replace(' ', '').rsplit('.')
     
     if (exten[1].lower()=='jpg' or exten[1].lower()=='png' or exten[1].lower()=='jpeg' ):
         #validacion si el nombre de la imagen ya existe en db
+        url_Img = file_name
         if os.path.exists('./src/img/' + file_name):
             now = datetime.now()
             url_Img = str(now).replace(' ', '') + file_name    
