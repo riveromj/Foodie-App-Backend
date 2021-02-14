@@ -110,6 +110,7 @@ class Recipe(db.Model):
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     comments = db.relationship('Comments', cascade = "all,delete", backref = 'recipe', lazy = True)
+    user = relationship("User")
    
     
     def serialize(self):
@@ -121,6 +122,7 @@ class Recipe(db.Model):
             "elaboration":self.elaboration,
             "date_recipe":self.date_recipe,
             "user_id":self.user_id,
+            "user_name":self.user.user_name,
             "comments": list(map(lambda comment: comment.serialize(), self.comments)),
             "is_active": self.is_active
         }
