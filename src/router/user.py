@@ -88,11 +88,11 @@ def user_route(app, token_required):
         print(user)
         for key in body:
             setattr(user, key, body[key])
-        # user_image = request.files['urlImg']
-        # url_Img = validate_file_format(app, user_image)
-        # if url_Img is None: 
-        #     return jsonify("Image format invalid"), 400
-        # user.urlImg = url_Img    
+        user_image = request.files['urlImg']
+        url_Img = validate_file_format(app, user_image)
+        if url_Img is None: 
+            return jsonify("Image format invalid"), 400
+        user.urlImg = url_Img    
         db.session.commit()
         response_body = {
                 "msg": user.serialize()
