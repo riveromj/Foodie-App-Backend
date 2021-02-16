@@ -106,7 +106,7 @@ def user_route(app, token_required):
         except KeyError as error:      
             return jsonify("error del KeyError" + str(error)), 400
         except SQLAlchemyError as e:
-            return jsonify("el usuario ya existe"), 403
+            return jsonify("user already exists"), 403
              
     
 
