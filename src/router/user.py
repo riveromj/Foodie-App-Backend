@@ -8,6 +8,8 @@ from werkzeug.datastructures import ImmutableMultiDict
 import os
 from datetime import datetime
 from validate_file_format import validate_file_format
+from sqlalchemy.exc import SQLAlchemyError
+
 #USER END POINTS >>>>>>>>>>>>>>>>>>
 
 def user_route(app, token_required):
@@ -83,26 +85,29 @@ def user_route(app, token_required):
     @app.route('/user', methods=['PUT'])
     @token_required
     def update_user(user):
-        body = dict(request.form)
-        user = db.session.query(User).filter_by(id=user['user']['id']).first()
-        existent_user= db.session.query(User).filter_by(user_name=body['user_name']).first()
-        if existent_user:
+        try:
+            body = dict(request.form)
+            user = db.session.query(User).filter_by(id=user['user']['id']).first()
+            if body['user_name']!="":
+                setattr(user, 'user_name', body['user_name'])
+            if request.files:
+                user_image = request.files['urlImg']
+                url_Img = validate_file_format(app, user_image)
+                if url_Img is None: 
+                    return jsonify("Image format invalid"), 400
+                user.urlImg = url_Img    
+            db.session.commit()
             response_body = {
-                "msg": "this user already exists"
-            }
-            return jsonify(response_body), 400,
-        if user.user_name!=body['user_name'] and body['user_name']!="":
-            setattr(user, 'user_name', body['user_name'])
-        if request.files:
-            user_image = request.files['urlImg']
-            url_Img = validate_file_format(app, user_image)
-            if url_Img is None: 
-                return jsonify("Image format invalid"), 400
-            user.urlImg = url_Img    
-        db.session.commit()
-        response_body = {
-                "msg": user.serialize()
-            }
-        return jsonify(response_body), 201
+                    "msg": user.serialize()
+                }
+            return jsonify(response_body), 201
+        except OSError as error:
+            return jsonify("error"), 400
+        except KeyError as error:      
+            return jsonify("error del KeyError" + str(error)), 400
+        except SQLAlchemyError as e:
+            return jsonify("el usuario ya existe"), 403
+             
+    
 
 
