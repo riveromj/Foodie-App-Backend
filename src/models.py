@@ -10,7 +10,7 @@ class User(db.Model):
     user_name = db.Column(db.String(80), unique= True, nullable= False)
     email = db.Column(db.String(120), unique = True, nullable = False)
     password = db.Column(db.String(80), unique = False, nullable= False)
-    urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-eebc3df8-f426-41f7-8f32-d9211915975b.ws-eu03.gitpod.io/default_user_profile.png')
+    urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-scarlet-cat-vmp5tp7q.ws-eu03.gitpod.io/default_user_profile.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
     comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
 
