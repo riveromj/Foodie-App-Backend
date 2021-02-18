@@ -6,8 +6,9 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import ImmutableMultiDict
 from os.path import join, dirname, realpath
 import os
-from validate_file_format import validate_file_format;
-import json;
+from validate_file_format import validate_file_format
+import json
+from sqlalchemy import and_, or_, not_
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
 def recipe_route(app, token_required):
@@ -75,7 +76,7 @@ def recipe_route(app, token_required):
     @app.route('/recipes/page/<int:page>',methods=['GET'])
     def all_recipes(page):
         try:
-            todo_recipes= db.session.query(Recipe).filter(Recipe.is_active==True).order_by(Recipe.date_recipe.desc()).paginate(page, 3, False).items
+            todo_recipes= db.session.query(Recipe).filter(Recipe.is_active==True).order_by(Recipe.date_recipe.desc()).paginate(page, 6, False).items
             models = list(map(lambda x: x.serialize(), todo_recipes))
             new_list=[]
             for recipe in models:
@@ -105,3 +106,21 @@ def recipe_route(app, token_required):
                 return jsonify('Receta eliminada'),200
         except OSError as error:
             return jsonify("error" + str(error)), 400
+
+
+####PRUEBA GET RECIPE POR ID DE CATEGORÍA   
+    @app.route('/category/<int:id_category>', methods = ['GET'])
+    def get_recipe_id(id_category):
+        print(id_category)
+        todo_recipes = db.session.query(Recipe_Category, Recipe).join(Recipe_Category).order_by(Recipe.date_recipe.desc()).filter(
+            Recipe_Category.id_category == id_category 
+        ).paginate(1,6, False).items
+        print(todo_recipes)
+        list_by_category = []
+        for recipe_category in todo_recipes:
+            recipe = recipe_category[0].serialize()
+            category = recipe_category[1].serialize()
+            recipe["category"] = category
+            list_by_category.append(recipe)
+        return jsonify(list_by_category), 200
+   
