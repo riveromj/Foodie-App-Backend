@@ -92,7 +92,7 @@ class Recipe_Category(db.Model):
     id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
     id_recipe = db.Column(db.Integer, db.ForeignKey('recipe.id'),nullable=True)
     category = relationship("Category")
-    recipe = relationship("Recipe", cascade = "all,delete", backref = 'recipe_Category')
+    
 
     def serialize(self):
         return{
@@ -111,8 +111,8 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
     comments = db.relationship('Comments', cascade = "all,delete", backref = 'recipe', lazy = True)
     user = relationship("User")
-   
-    
+    recipe_category = relationship("Recipe_Category")
+
     def serialize(self):
         return {
             "id": self.id,
