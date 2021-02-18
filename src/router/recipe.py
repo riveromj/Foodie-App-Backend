@@ -112,7 +112,7 @@ def recipe_route(app, token_required):
     @app.route('/category/<int:id_category>', methods = ['GET'])
     def get_recipe_id(id_category):
         print(id_category)
-        todo_recipes = db.session.query(Recipe_Category, Recipe).join(Recipe_Category).order_by(Recipe.date_recipe.desc()).filter(
+        todo_recipes = db.session.query(Recipe_Category, Recipe).join(Recipe_Category).order_by(Recipe.date_recipe.desc()).filter(Recipe.is_active==True).filter(
             Recipe_Category.id_category == id_category 
         ).paginate(1,6, False).items
         print(todo_recipes)
