@@ -122,5 +122,14 @@ def recipe_route(app, token_required):
             category = recipe_category[1].serialize()
             recipe["category"] = category
             list_by_category.append(recipe)
+        print("lista de rectas", list_by_category)
         return jsonify(list_by_category), 200
+
+##### get categories
+    @app.route('/categories', methods = ['GET'])
+    def get_categories():
+        all_categories=Category.get_all_categories(Category)
+        return jsonify(all_categories), 200
+    
+    
    
