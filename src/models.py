@@ -87,6 +87,11 @@ class Category(db.Model):
             "id":self.id,
             "name_category": self.name_category
         }
+    def get_all_categories(self):
+        all_categories= self.query.all()
+        categories_serialized=[category.serialize() for category in all_categories]
+        return categories_serialized
+        
 class Recipe_Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_category = db.Column(db.Integer, db.ForeignKey('category.id'),nullable=True)
