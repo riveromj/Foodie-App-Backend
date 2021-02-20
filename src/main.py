@@ -13,7 +13,7 @@ from router.user import user_route
 from router.recipe import recipe_route
 from router.comments import comments_route
 from router.favorites import favorites_route
-
+import cloudinary
 from functools import wraps
 from jwt_auth import encode_token, decode_token
 import jwt
@@ -28,6 +28,12 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
+cloudinary.config(
+    cloud_name = os.environ.get('CLOUD_NAME'),
+    api_key = os.environ.get('CLOUD_API_KEY'),
+    api_secret = os.environ.get('CLOUD_SECRET')
+)
 
 #TODO: mover return de 51 a 42 y pasar data en los parametros
 

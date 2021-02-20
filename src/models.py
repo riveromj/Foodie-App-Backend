@@ -10,7 +10,7 @@ class User(db.Model):
     user_name = db.Column(db.String(80), unique= True, nullable= False)
     email = db.Column(db.String(120), unique = True, nullable = False)
     password = db.Column(db.String(80), unique = False, nullable= False)
-    urlImg = db.Column(db.Text, nullable = True, default = 'https://3000-scarlet-cat-vmp5tp7q.ws-eu03.gitpod.io/default_user_profile.png')
+    urlImg = db.Column(db.Text, nullable = True, default = 'https://res.cloudinary.com/df9k0kc8n/image/upload/v1613814883/user_default_photo_kxtjyx.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
     comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
 
