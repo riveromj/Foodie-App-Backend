@@ -31,6 +31,7 @@ def recipe_route(app, token_required):
                 return jsonify("Image cannot be empty"),400
             new_file = request.files['image']            
             url_image = validate_file_format(app, new_file)
+            
             new_recipe = Recipe(title = body['title'], image = url_image,ingredients = body['ingredients'], elaboration = body['elaboration'], user_id = id)
             db.session.add(new_recipe)
             db.session.commit()
