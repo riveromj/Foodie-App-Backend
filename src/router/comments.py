@@ -4,10 +4,10 @@ from models import db, User, Recipe, Comments
 
 def comments_route(app, token_required):
     #TODO: recibir id de receta
-    @app.route('/comments', methods=['GET'])
+    @app.route('/comments/<int:id>', methods=['GET'])
     @token_required
-    def get_all_comments():
-        all_comments=Comments.query.filter_by(is_active=True)
+    def get_all_comments(user, id):
+        all_comments=Comments.query.filter_by(is_active=True, recipe_id = id )
         comment_list=[]
         for comment in all_comments:
             comment_list.append(comment.serialize())
@@ -15,7 +15,7 @@ def comments_route(app, token_required):
 
     @app.route('/comments', methods=['POST'])
     @token_required
-    def create_comment():
+    def create_comment(user):
         body=request.get_json()
         print(body)
         new_comment=Comments(text = body['text'], user_id = user['user']['id'], recipe_id = body['recipe_id'])
