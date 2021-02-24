@@ -11,8 +11,9 @@ import json
 from sqlalchemy import and_, or_, not_
 #RECIPE END POINTS >>>>>>>>>>>>>>>>>>
 
-def recipe_route(app, token_required):
 
+def recipe_route(app, token_required):
+    #crear receta
     #TODO: dejar el path como recipe y recibir el user por el token
     @app.route('/recipe',methods=['POST'])
     @token_required
@@ -56,6 +57,46 @@ def recipe_route(app, token_required):
         except KeyError as error_key:
             return jsonify("error_key" + str(error_key)), 400
 
+    #editar receta 
+    @app.route('/recipe/<int:id>', methods=['PUT'])
+    @token_required
+    def update_recipe(user,id):
+        try:
+            body = dict(request.form)
+            print(body,'**********')
+            print(id,'+++++++++++')
+            recipe = db.session.query(Recipe).filter_by(id=id).first()
+            category = db.session.query(Recipe,Recipe_Category).filter_by(id=id).first()
+           
+            if body['title']!="":
+                setattr(recipe, 'title', body['title'])
+            if request.files:
+                image = request.files['image']
+                url_Img = validate_file_format(app, image)
+                print(url_Img,"-------------------")
+                if url_Img is None: 
+                    return jsonify("Image format invalid"), 400
+                recipe.image = url_Img  
+            #Buscamos cada categoría en la base de datos y la añadimos a recipe category
+            allCategories = json.loads(body["categories"])
+            print(allCategories,'todas las cate')
+            for category in allCategories:
+                
+                thisCategory = Category.query.filter_by(name_category = category).first()
+                print(category, "category")
+                if thisCategory:
+                    new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
+                    db.session.add(new_recipe_category)
+            db.session.commit()
+            response_body = {
+                    "msg": recipe.serialize()
+                }
+            return jsonify(response_body), 201
+        except OSError as error:
+            return jsonify("error"), 400
+        except KeyError as error:      
+            return jsonify("error del KeyError" + str(error)), 400
+        
     #Consultar las recetar por usuario
     @app.route('/user/recipes',methods=['GET'])
     @token_required
