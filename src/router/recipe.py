@@ -41,15 +41,11 @@ def recipe_route(app, token_required):
             allCategories = json.loads(body["categories"])
 
             for category in allCategories:
-                
                 thisCategory = Category.query.filter_by(name_category = category).first()
-                print(category, "category")
                 if thisCategory:
                     new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = new_recipe.id)
                     db.session.add(new_recipe_category)
                     db.session.commit()
-            
-            print(new_recipe)
             return jsonify(new_recipe.serialize()),200
 
         except OSError as error:
@@ -63,10 +59,7 @@ def recipe_route(app, token_required):
     def update_recipe(user,id):
         try:
             body = dict(request.form)
-            print(body['categories'],'**********')
             recipe = db.session.query(Recipe).filter_by(id=id).first()
-            # for x,y in body:
-            #     recipe[x]=y
 
             if body['title']!="":
                 setattr(recipe, 'title', body['title'])
@@ -88,14 +81,13 @@ def recipe_route(app, token_required):
             
             for category in allCategories:
                 thisCategory = Category.query.filter_by(name_category = category).first()
-                print(category, "category")
                 if thisCategory:
                     new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
                     db.session.add(new_recipe_category)
             recipe.date_recipe= datetime.now()
             db.session.commit()
             response_body = {
-                    "msg": "recipe.serialize()"
+                    "msg": "recipe successfully modified"
                 }
             return jsonify(response_body), 201
         except OSError as error:
@@ -118,8 +110,6 @@ def recipe_route(app, token_required):
         except KeyError as error_key:
             return jsonify("error_key"),400
 
-
-
     #Consulta de todas las recetas para Home 
     @app.route('/recipes/page/<int:page>',methods=['GET'])
     def all_recipes(page):
@@ -135,8 +125,6 @@ def recipe_route(app, token_required):
             return jsonify("error"),400
         except KeyError as error_key:
             return jsonify("error_key"),400
-
-
 
     #Eliminar Receta con el id de la receta
     @app.route('/delete/recipe/<int:id>',methods=['PUT'])
@@ -154,22 +142,18 @@ def recipe_route(app, token_required):
         except OSError as error:
             return jsonify("error" + str(error)), 400
 
-
 ####PRUEBA GET RECIPE POR ID DE CATEGORÍA   
     @app.route('/category/<int:id_category>', methods = ['GET'])
     def get_recipe_id(id_category):
-        print(id_category)
         todo_recipes = db.session.query(Recipe_Category, Recipe).join(Recipe_Category).order_by(Recipe.date_recipe.desc()).filter(Recipe.is_active==True).filter(
             Recipe_Category.id_category == id_category 
         ).paginate(1,6, False).items
-        print(todo_recipes)
         list_by_category = []
         for recipe_category in todo_recipes:
             recipe = recipe_category[0].serialize()
             category = recipe_category[1].serialize()
             recipe["category"] = category
             list_by_category.append(recipe)
-        print("lista de rectas", list_by_category)
         return jsonify(list_by_category), 200
 
 ##### get categories
