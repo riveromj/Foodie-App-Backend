@@ -63,36 +63,39 @@ def recipe_route(app, token_required):
     def update_recipe(user,id):
         try:
             body = dict(request.form)
-            print(body,'**********')
+            print(body['categories'],'**********')
             recipe = db.session.query(Recipe).filter_by(id=id).first()
-            category = db.session.query(Recipe_Category).filter_by(id_recipe=id).first()
-            print(category,"+++++++++")
+            # for x,y in body:
+            #     recipe[x]=y
+
             if body['title']!="":
                 setattr(recipe, 'title', body['title'])
             if body['elaboration']!="":
                 setattr(recipe, 'elaboration', body['elaboration'])
             if body['ingredients']!="":
                 setattr(recipe, 'ingredients', body['ingredients'])
+            if body['categories']!="":
+                setattr(recipe, 'categories', body['categories'])
             if request.files:
                 image = request.files['image']
                 url_Img = validate_file_format(app, image)
-                print(url_Img,"-------------------")
                 if url_Img is None: 
                     return jsonify("Image format invalid"), 400
                 recipe.image = url_Img  
             #Buscamos cada categoría en la base de datos y la añadimos a recipe category
-            # allCategories = json.loads(body["categories"])
-            # print(allCategories,'todas las cate')
-            # for category in allCategories:
-                
-            #     thisCategory = Category.query.filter_by(name_category = category).first()
-            #     print(category, "category")
-            #     if thisCategory:
-            #         new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
-            #         db.session.add(new_recipe_category)
+            category = db.session.query(Recipe_Category).filter_by(id_recipe=id).all()
+            allCategories = json.loads(body["categories"])
+            
+            for category in allCategories:
+                thisCategory = Category.query.filter_by(name_category = category).first()
+                print(category, "category")
+                if thisCategory:
+                    new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
+                    db.session.add(new_recipe_category)
+            recipe.date_recipe= datetime.now()
             db.session.commit()
             response_body = {
-                    "msg": recipe.serialize()
+                    "msg": "recipe.serialize()"
                 }
             return jsonify(response_body), 201
         except OSError as error:
@@ -127,7 +130,6 @@ def recipe_route(app, token_required):
             for recipe in models:
                 recipe["ingredients"] = recipe["ingredients"][1:-1].replace('"',"").split(",")
                 new_list.append(recipe)
-            print(new_list,"======")    
             return jsonify(new_list),200
         except OSError as error:
             return jsonify("error"),400
