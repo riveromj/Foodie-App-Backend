@@ -110,7 +110,7 @@ class Recipe(db.Model):
     title = db.Column(db.String(250),nullable=False)
     image = db.Column(db.String(250),nullable=False)
     ingredients = db.Column(db.String(250),nullable=False)
-    elaboration = db.Column(db.String(250),nullable=False)
+    elaboration = db.Column(db.String(50000),nullable=False)
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     date_recipe = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable=True)
