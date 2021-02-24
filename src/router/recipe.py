@@ -64,12 +64,15 @@ def recipe_route(app, token_required):
         try:
             body = dict(request.form)
             print(body,'**********')
-            print(id,'+++++++++++')
             recipe = db.session.query(Recipe).filter_by(id=id).first()
-            category = db.session.query(Recipe,Recipe_Category).filter_by(id=id).first()
-           
+            category = db.session.query(Recipe_Category).filter_by(id_recipe=id).first()
+            print(category,"+++++++++")
             if body['title']!="":
                 setattr(recipe, 'title', body['title'])
+            if body['elaboration']!="":
+                setattr(recipe, 'elaboration', body['elaboration'])
+            if body['ingredients']!="":
+                setattr(recipe, 'ingredients', body['ingredients'])
             if request.files:
                 image = request.files['image']
                 url_Img = validate_file_format(app, image)
@@ -78,15 +81,15 @@ def recipe_route(app, token_required):
                     return jsonify("Image format invalid"), 400
                 recipe.image = url_Img  
             #Buscamos cada categoría en la base de datos y la añadimos a recipe category
-            allCategories = json.loads(body["categories"])
-            print(allCategories,'todas las cate')
-            for category in allCategories:
+            # allCategories = json.loads(body["categories"])
+            # print(allCategories,'todas las cate')
+            # for category in allCategories:
                 
-                thisCategory = Category.query.filter_by(name_category = category).first()
-                print(category, "category")
-                if thisCategory:
-                    new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
-                    db.session.add(new_recipe_category)
+            #     thisCategory = Category.query.filter_by(name_category = category).first()
+            #     print(category, "category")
+            #     if thisCategory:
+            #         new_recipe_category = Recipe_Category(id_category = thisCategory.id, id_recipe = id)
+            #         db.session.add(new_recipe_category)
             db.session.commit()
             response_body = {
                     "msg": recipe.serialize()
