@@ -103,7 +103,8 @@ class Recipe_Category(db.Model):
         return{
             "id":self.id,
             "id_category":self.id_category,
-            "id_recipe":self.id_recipe
+            "id_recipe":self.id_recipe,
+            "category_name":self.category.name_category
         }
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -129,6 +130,7 @@ class Recipe(db.Model):
             "user_id":self.user_id,
             "user_name":self.user.user_name,
             "comments": list(map(lambda comment: comment.serialize(), self.comments)),
+            "categories":list(map(lambda category: category.serialize(), self.recipe_category)),
             "is_active": self.is_active
         }
 

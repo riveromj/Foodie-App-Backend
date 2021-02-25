@@ -93,6 +93,7 @@ def user_route(app, token_required):
             if request.files:
                 user_image = request.files['urlImg']
                 url_Img = validate_file_format(app, user_image)
+                print(url_Img,"-------------------")
                 if url_Img is None: 
                     return jsonify("Image format invalid"), 400
                 user.urlImg = url_Img    
