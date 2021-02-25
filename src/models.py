@@ -13,7 +13,8 @@ class User(db.Model):
     urlImg = db.Column(db.Text, nullable = True, default = 'https://res.cloudinary.com/df9k0kc8n/image/upload/v1613814883/user_default_photo_kxtjyx.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
     comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
-
+    recipes = db.relationship('Recipe', cascade="all,delete")
+    favorites = db.relationship('Favorites', cascade="all,delete")
     #def __repr__(self): return '<User %r>' % self.id 
     def __str__(self):        
         return '{} <{}>' .format(self.email, self.user_name)   
@@ -117,7 +118,8 @@ class Recipe(db.Model):
     comments = db.relationship('Comments', cascade = "all,delete", backref = 'recipe', lazy = True)
     user = relationship("User")
     recipe_category = relationship("Recipe_Category")
-
+    favorites = db.relationship('Favorites', cascade = "all,delete")
+    
     def serialize(self):
         return {
             "id": self.id,
