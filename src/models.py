@@ -12,7 +12,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique = False, nullable= False)
     urlImg = db.Column(db.Text, nullable = True, default = 'https://res.cloudinary.com/df9k0kc8n/image/upload/v1613814883/user_default_photo_kxtjyx.png')
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default= True)
-    comments = db.relationship('Comments', cascade="all,delete", backref='user', lazy=True)
+    comments = db.relationship('Comments', cascade="all,delete")
     recipes = db.relationship('Recipe', cascade="all,delete")
     favorites = db.relationship('Favorites', cascade="all,delete")
     #def __repr__(self): return '<User %r>' % self.id 
@@ -37,6 +37,7 @@ class Comments(db.Model):
     is_active = db.Column(db.Boolean(), unique = False, nullable = False, default = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    user = db.relationship("User", backref = "Comments", lazy = True)
     
     
     
@@ -50,7 +51,8 @@ class Comments(db.Model):
             "date_comment": self.date_comment,
             "is_active": self.is_active,
             "user_id": self.user_id,
-            "recipe_id": self.recipe_id
+            "recipe_id": self.recipe_id,
+            "user": self.user.serialize()
         }
 
 class Favorites(db.Model):
