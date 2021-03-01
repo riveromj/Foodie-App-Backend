@@ -150,8 +150,9 @@ def recipe_route(app, token_required):
         ).paginate(1,6, False).items
         list_by_category = []
         for recipe_category in todo_recipes:
-            recipe = recipe_category[0].serialize()
+            recipe = recipe_category[0].serialize()     
             category = recipe_category[1].serialize()
+            category["ingredients"] = category["ingredients"][1:-1].replace('"',"").split(",")
             recipe["category"] = category
             list_by_category.append(recipe)
         return jsonify(list_by_category), 200
